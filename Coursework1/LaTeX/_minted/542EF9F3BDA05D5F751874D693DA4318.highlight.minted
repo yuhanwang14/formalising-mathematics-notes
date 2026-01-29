@@ -1,0 +1,17 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{l+s+sd}{/\PYGZhy{}\PYGZhy{}}\PYG{l+s+sd}{ Bolzano}\PYG{l+s+sd}{\PYGZhy{}}\PYG{l+s+sd}{Weierstrass: bounded sequences in ℝ have convergent subsequences.}
+\PYG{l+s+sd}{Uses compactness of closed balls in ℝ. }\PYG{l+s+sd}{\PYGZhy{}/}
+\PYG{k+kd}{lemma}\PYG{+w}{ }\PYG{n}{exists\PYGZus{}tendsto\PYGZus{}subseq\PYGZus{}of\PYGZus{}bounded}\PYG{+w}{ }\PYG{o}{\PYGZob{}}\PYG{n}{u}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{ℕ}\PYG{+w}{ }\PYG{n+nb+bp}{→}\PYG{+w}{ }\PYG{n}{ℝ}\PYG{o}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{o}{(}\PYG{n}{hb}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{Bornology.IsBounded}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{Set.range}\PYG{+w}{ }\PYG{n}{u}\PYG{o}{)}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{:}
+\PYG{+w}{    }\PYG{n+nb+bp}{∃}\PYG{+w}{ }\PYG{n}{a}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{ℝ}\PYG{o}{,}\PYG{+w}{ }\PYG{n+nb+bp}{∃}\PYG{+w}{ }\PYG{n}{φ}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{ℕ}\PYG{+w}{ }\PYG{n+nb+bp}{→}\PYG{+w}{ }\PYG{n}{ℕ}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{StrictMono}\PYG{+w}{ }\PYG{n}{φ}\PYG{+w}{ }\PYG{n+nb+bp}{∧}\PYG{+w}{ }\PYG{n}{Tendsto}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{u}\PYG{+w}{ }\PYG{n+nb+bp}{∘}\PYG{+w}{ }\PYG{n}{φ}\PYG{o}{)}\PYG{+w}{ }\PYG{n}{atTop}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{𝓝}\PYG{+w}{ }\PYG{n}{a}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{k+kd}{by}
+\PYG{+w}{    }\PYG{n}{classical}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Find a closed ball containing the entire range}
+\PYG{+w}{    }\PYG{n}{rcases}\PYG{+w}{ }\PYG{n}{hb.subset\PYGZus{}closedBall}\PYG{+w}{ }\PYG{o}{(}\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{ℝ}\PYG{o}{)}\PYG{+w}{ }\PYG{k}{with}\PYG{+w}{ }\PYG{o}{⟨}\PYG{n}{R}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{hsub}\PYG{o}{⟩}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Every term of the sequence lies in this closed ball}
+\PYG{+w}{    }\PYG{k}{have}\PYG{+w}{ }\PYG{n}{hu\PYGZus{}in}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb+bp}{∀}\PYG{+w}{ }\PYG{n}{n}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{ℕ}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{u}\PYG{+w}{ }\PYG{n}{n}\PYG{+w}{ }\PYG{n+nb+bp}{∈}\PYG{+w}{ }\PYG{n}{Metric.closedBall}\PYG{+w}{ }\PYG{o}{(}\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{ℝ}\PYG{o}{)}\PYG{+w}{ }\PYG{n}{R}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{k}{fun}\PYG{+w}{ }\PYG{n}{n}\PYG{+w}{ }\PYG{n+nb+bp}{↦}\PYG{+w}{ }\PYG{n}{hsub}\PYG{+w}{ }\PYG{o}{⟨}\PYG{n}{n}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{rfl}\PYG{o}{⟩}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Closed balls in ℝ are compact (uses completeness of ℝ)}
+\PYG{+w}{    }\PYG{k}{have}\PYG{+w}{ }\PYG{n}{hK}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{IsCompact}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{Metric.closedBall}\PYG{+w}{ }\PYG{o}{(}\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{ℝ}\PYG{o}{)}\PYG{+w}{ }\PYG{n}{R}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{n}{isCompact\PYGZus{}closedBall}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{n}{R}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Extract a convergent subsequence via sequential compactness}
+\PYG{+w}{    }\PYG{n}{rcases}\PYG{+w}{ }\PYG{n}{hK.tendsto\PYGZus{}subseq}\PYG{+w}{ }\PYG{n}{hu\PYGZus{}in}\PYG{+w}{ }\PYG{k}{with}\PYG{+w}{ }\PYG{o}{⟨}\PYG{n}{a}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{φ}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{hφ}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{hlim}\PYG{o}{⟩}
+\PYG{+w}{    }\PYG{n}{exact}\PYG{+w}{ }\PYG{o}{⟨}\PYG{n}{a}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{φ}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{hφ}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{hlim}\PYG{o}{⟩}
+\end{MintedVerbatim}

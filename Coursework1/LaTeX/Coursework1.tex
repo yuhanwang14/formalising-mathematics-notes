@@ -1,0 +1,343 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{minted}
+\usepackage{newunicodechar}
+\newunicodechar{ℕ}{\ensuremath{\mathbb{N}}}
+\newunicodechar{ℝ}{\ensuremath{\mathbb{R}}}
+\newunicodechar{𝓝}{\ensuremath{\mathcal{N}}}
+\newunicodechar{φ}{\ensuremath{\varphi}}
+\newunicodechar{∀}{\ensuremath{\forall}}
+\newunicodechar{∃}{\ensuremath{\exists}}
+\newunicodechar{↔}{\ensuremath{\leftrightarrow}}
+\newunicodechar{≤}{\ensuremath{\le}}
+\newunicodechar{≥}{\ensuremath{\ge}}
+\newunicodechar{≠}{\ensuremath{\ne}}
+\newunicodechar{∧}{\ensuremath{\wedge}}
+\newunicodechar{∘}{\ensuremath{\circ}}
+\newunicodechar{ε}{\ensuremath{\varepsilon}}
+\newunicodechar{δ}{\ensuremath{\delta}}
+\newunicodechar{∈}{\ensuremath{\in}}
+\newunicodechar{⊆}{\ensuremath{\subseteq}}
+\newunicodechar{∪}{\ensuremath{\cup}}
+\newunicodechar{∞}{\ensuremath{\infty}}
+\newunicodechar{̄}{}
+\newunicodechar{₀}{\ensuremath{_{0}}}
+\newunicodechar{₁}{\ensuremath{_{1}}}
+\newunicodechar{₂}{\ensuremath{_{2}}}
+\newunicodechar{ᵐ}{\ensuremath{^m}}
+\newunicodechar{ᶜ}{\ensuremath{^c}}
+\newunicodechar{ᶠ}{\ensuremath{^f}}
+\newunicodechar{⇒}{\ensuremath{\Rightarrow}}
+\newunicodechar{⇐}{\ensuremath{\Leftarrow}}
+\newunicodechar{↦}{\ensuremath{\mapsto}}
+\geometry{margin=1in}
+
+\title{Formalising the Cauchy Criterion in \(\mathbb{R}\)}
+\author{Yuhan Wang}
+\date{}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+\begin{document}
+\maketitle
+% \tableofcontents
+% \newpage
+
+\section{Introduction}
+
+For this project, we will prove the following well-known theorem. 
+
+\begin{theorem}[Cauchy Criterion in \(\mathbb{R}\)]
+Let \((u_n)\) be a sequence in \(\mathbb{R}\). Then
+\[
+(u_n)\ \text{is Cauchy} \quad\Longleftrightarrow\quad \exists a\in\mathbb{R}\ \text{such that } u_n \to a.
+\]
+\end{theorem}
+
+This classical result characterises the \emph{completeness} of the real numbers---a defining property that distinguishes \(\mathbb{R}\) from \(\mathbb{Q}\). The Cauchy criterion is foundational to real analysis.
+
+% This theorem is important because it allows one to recognise convergence using only the internal ``stability'' of a sequence, without knowing the limit in advance. It is used throughout real analysis: for example, to justify that \(\mathbb{R}\) has limits for Cauchy sequences, to control approximation schemes, and to prove convergence results for sequences and series by estimating differences \(u_m-u_n\).
+
+The proof consists of two directions. The forward direction (Convergent \(\Rightarrow\) Cauchy) is a standard \(\varepsilon/2\) triangle inequality argument. The reverse direction (Cauchy \(\Rightarrow\) Convergent) is more substantial and follows the route
+\[
+\text{Cauchy} \Rightarrow \text{bounded} \Rightarrow \text{convergent subsequence} \Rightarrow \text{convergent}.
+\]
+This chain makes explicit the role of the Bolzano--Weierstrass theorem and the interaction between the Cauchy property and subsequential limits.
+
+\textbf{Lean} is an interactive theorem prover that allows mathematical proofs to be written in a formal language and checked by a computer. In this project, I formalise the Cauchy criterion in Lean 4 using the Mathlib library, closely following the proof structure described above.
+
+\section{Mathematical Proof}
+
+\subsection*{Direction 1: Convergent \(\Rightarrow\) Cauchy}
+
+Let \((u_n)\) be a sequence in \(\mathbb{R}\) and assume \(u_n \to a\).
+By definition, this means that for every \(\varepsilon>0\) there exists \(N\) such that
+\(|u_n-a|<\varepsilon\) for all \(n\ge N\).
+To show that \((u_n)\) is Cauchy, fix \(\varepsilon>0\) and choose \(N\) such that
+\(|u_n-a|<\varepsilon/2\) for all \(n\ge N\).
+Then for any \(m,n\ge N\), the triangle inequality gives
+\[
+|u_m-u_n|
+\le |u_m-a| + |u_n-a|
+< \varepsilon/2 + \varepsilon/2
+= \varepsilon,
+\]
+so \((u_n)\) is Cauchy.
+
+\subsection*{Direction 2: Cauchy \(\Rightarrow\) Convergent}
+
+Assume \((u_n)\) is Cauchy, i.e.\ for every \(\varepsilon>0\) there exists \(N\) such that
+\(|u_m-u_n|<\varepsilon\) whenever \(m,n\ge N\).
+We prove convergence in three steps, matching the structure used in the Lean development.
+
+\begin{lemma}[Cauchy implies bounded]
+If \((u_n)\) is Cauchy in \(\mathbb{R}\), then the set \(\{u_n : n\in\mathbb{N}\}\) is bounded.
+\end{lemma}
+
+\begin{proof}
+Apply the Cauchy condition with \(\varepsilon=1\). Then there exists \(N\) such that
+\(|u_m-u_n|<1\) for all \(m,n\ge N\). In particular, for all \(n\ge N\),
+\(|u_n-u_N|<1\), so \(u_n\in (u_N-1,u_N+1)\). The finitely many terms
+\(\{u_0,\dots,u_{N-1}\}\) are bounded, hence the entire range is bounded.
+\end{proof}
+
+\begin{lemma}[Bolzano--Weierstrass in \(\mathbb{R}\)]
+Every bounded sequence in \(\mathbb{R}\) has a convergent subsequence.
+\end{lemma}
+
+\begin{proof}
+Since the range of \((u_n)\) is bounded, it lies in some closed ball \(\overline{B}(0,R)\).
+Closed balls in \(\mathbb{R}\) are compact, and compactness implies sequential compactness in metric spaces,
+so \((u_n)\) has a convergent subsequence.
+\end{proof}
+
+Let \(u_{\varphi(k)} \to a\) be a convergent subsequence, where \(\varphi:\mathbb{N}\to\mathbb{N}\) is strictly increasing.
+
+\begin{lemma}[Cauchy + convergent subsequence implies convergence]
+If \((u_n)\) is Cauchy and \(u_{\varphi(k)}\to a\) for some strictly increasing \(\varphi\),
+then \(u_n\to a\).
+\end{lemma}
+
+\begin{proof}
+Fix \(\varepsilon>0\).
+Choose \(N\) such that \(|u_m-u_n|<\varepsilon/2\) whenever \(m,n\ge N\) (Cauchy property).
+Choose \(K\) such that \(|u_{\varphi(k)}-a|<\varepsilon/2\) whenever \(k\ge K\) (subsequence convergence).
+
+Since \(\varphi(k)\to\infty\), pick \(k_0\ge K\) with \(\varphi(k_0)\ge N\).
+Then for any \(n\ge N\),
+\[
+|u_n-a|
+\le |u_n-u_{\varphi(k_0)}| + |u_{\varphi(k_0)}-a|
+< \varepsilon/2 + \varepsilon/2
+= \varepsilon.
+\]
+Hence \(u_n\to a\).
+\end{proof}
+
+Combining the lemmas, every Cauchy sequence in \(\mathbb{R}\) converges.
+
+\section{Implementation Discussion}
+
+\noindent
+The arguments in the proof sketch translate into Lean quite directly, but Lean forces us to make every implicit step precise: the objects, the ambient structures, and the \(\varepsilon\)--\(N\) bookkeeping all have to be stated in a form that the kernel can check.
+In particular, we work with:
+\begin{itemize}
+  \item convergence written as \mintinline{lean}{Tendsto u atTop (𝓝 a)} (filter-based convergence),
+  \item the Cauchy property written as \mintinline{lean}{CauchySeq u},
+  \item boundedness of the range written as \mintinline{lean}{Bornology.IsBounded (Set.range u)}.
+\end{itemize}
+
+\medskip
+\noindent
+\textbf{Direction (Convergent \(\Rightarrow\) Cauchy).}
+In a human proof one writes down the \(\varepsilon/2\) estimate and is done. In Lean, we package this argument as a separate lemma \verb|cauchySeq_of_tendsto|. The key move is to rewrite \verb|CauchySeq| using the metric \(\varepsilon\)--\(N\) characterisation \verb|Metric.cauchySeq_iff|, and to extract the \(\varepsilon/2\) bound from \verb|Tendsto| via \verb|Metric.tendsto_atTop|.
+
+\begin{minted}{lean}
+/-- Convergent sequences are Cauchy.
+Standard ε/2 argument using the triangle inequality. -/
+lemma cauchySeq_of_tendsto {u : ℕ → ℝ} {a : ℝ} (ha : Tendsto u atTop (𝓝 a)) 
+    : CauchySeq u := by
+    -- Rewrite using the ε-N characterisation
+    rw [Metric.cauchySeq_iff]
+    intro ε hε
+    -- From convergence: find N such that |u_n - a| < ε/2 for n ≥ N
+    rcases Metric.tendsto_atTop.mp ha (ε / 2) (by linarith) with ⟨N, hN⟩
+    -- N works as our threshold
+    refine ⟨N, fun m hm n hn => ?_⟩
+    -- Triangle inequality: |u_m - u_n| ≤ |u_m - a| + |a - u_n|
+    calc dist (u m) (u n)
+        ≤ dist (u m) a + dist a (u n) := dist_triangle _ _ _
+    _ = dist (u m) a + dist (u n) a := by rw [dist_comm a (u n)]
+    _ < ε / 2 + ε / 2 := add_lt_add (hN m hm) (hN n hn)
+    _ = ε := by ring
+\end{minted}
+
+\medskip
+\noindent
+\textbf{Direction (Cauchy \(\Rightarrow\) Convergent).}
+The main work is split into three lemmas, and the final theorem simply composes them.
+
+\smallskip
+\noindent
+\emph{Step 1 (Cauchy \(\Rightarrow\) bounded range).}
+The informal proof splits the range into a finite prefix and a tail controlled by the Cauchy condition at \(\varepsilon=1\).
+Lean makes this explicit by constructing the prefix as an image of \(\{0,1,\dots,N-1\}\), proving a set inclusion
+\(\mathrm{range}(u)\subseteq B(u_N,1)\cup \mathrm{prefix}\), and then using that a ball is bounded and a finite set is bounded.
+
+\begin{minted}{lean}
+/-- Cauchy sequences in ℝ have bounded range.
+Split the range into a tail controlled by Cauchy condition and a finite prefix. -/
+lemma cauchySeq_isBounded_range {u : ℕ → ℝ} (hu : CauchySeq u) :
+    Bornology.IsBounded (Set.range u) := by
+    classical
+    -- Convert the Cauchy condition to the ε-N form
+    have hC := Metric.cauchySeq_iff.mp hu
+    -- Apply with ε = 1 to get the threshold index N
+    rcases hC 1 (by norm_num) with ⟨N, hN⟩
+    -- Define the finite prefix: the image of {0, 1, ..., N-1} under u
+    let prefixSet : Set ℝ := u '' (Set.Iio N)
+    -- Show that the full range is contained in the ball ∪ prefix
+    have hsub : Set.range u ⊆ Metric.ball (u N) 1 ∪ prefixSet := by
+    intro x hx
+    -- x is in the range, so x = u(n) for some n
+    rcases hx with ⟨n, rfl⟩
+    -- Case split on whether n ≥ N or n < N
+    by_cases hn : N ≤ n
+    · -- Case n ≥ N: u(n) is in the ball B(u_N, 1)
+        left
+        have : dist (u n) (u N) < 1 := hN n hn N le_rfl
+        simpa [Metric.mem_ball] using this
+    · -- Case n < N: u(n) is in the finite prefix
+        right
+        have : n ∈ Set.Iio N := Nat.lt_of_not_ge hn
+        exact ⟨n, this, rfl⟩
+    -- Ball is bounded (metric space property)
+    have hball_bdd : Bornology.IsBounded (Metric.ball (u N) 1 : Set ℝ) 
+        := Metric.isBounded_ball
+    -- Finite prefix is bounded (finite sets are bounded)
+    have hprefixSet_bdd : Bornology.IsBounded prefixSet := by
+    have : (Set.Iio N).Finite := Set.finite_Iio N
+    simpa [prefixSet] using (this.image u).isBounded
+    -- Union of bounded sets is bounded, subset of bounded is bounded
+    exact (hball_bdd.union hprefixSet_bdd).subset hsub
+\end{minted}
+
+\smallskip
+\noindent
+\emph{Step 2 (bounded range \(\Rightarrow\) convergent subsequence).}
+In Lean we first use the library lemma \\\verb|hb.subset_closedBall| to place the range inside a closed ball \(\overline{B}(0,R)\).
+In \(\mathbb{R}\), closed balls are compact; then a compact set is sequentially compact, and Mathlib provides a lemma
+extracting a strictly monotone subsequence \mintinline{lean}{φ} together with a limit.
+
+\begin{minted}{lean}
+/-- Bolzano-Weierstrass: bounded sequences in ℝ have convergent subsequences.
+Uses compactness of closed balls in ℝ. -/
+lemma exists_tendsto_subseq_of_bounded {u : ℕ → ℝ}
+    (hb : Bornology.IsBounded (Set.range u)) :
+    ∃ a : ℝ, ∃ φ : ℕ → ℕ, StrictMono φ ∧ Tendsto (u ∘ φ) atTop (𝓝 a) := by
+    classical
+    -- Find a closed ball containing the entire range
+    rcases hb.subset_closedBall (0 : ℝ) with ⟨R, hsub⟩
+    -- Every term of the sequence lies in this closed ball
+    have hu_in : ∀ n : ℕ, u n ∈ Metric.closedBall (0 : ℝ) R := fun n ↦ hsub ⟨n, rfl⟩
+    -- Closed balls in ℝ are compact (uses completeness of ℝ)
+    have hK : IsCompact (Metric.closedBall (0 : ℝ) R) := isCompact_closedBall 0 R
+    -- Extract a convergent subsequence via sequential compactness
+    rcases hK.tendsto_subseq hu_in with ⟨a, _, φ, hφ, hlim⟩
+    exact ⟨a, φ, hφ, hlim⟩
+\end{minted}
+
+\smallskip
+\noindent
+\emph{Step 3 (Cauchy + convergent subsequence \(\Rightarrow\) convergence).}
+The \(\varepsilon/2\) idea is the same as in the human proof, but Lean requires us to express three separate ``eventually'' statements:
+one from the Cauchy hypothesis, one from the subsequence convergence, and one expressing that \(\varphi(k)\to\infty\) when \(\varphi\) is strictly monotone.
+After extracting the relevant indices, we take \(k_0=\max(K,K_1)\) so that both estimates apply, and conclude using the triangle inequality.
+
+\begin{minted}{lean}
+/-- A Cauchy sequence with a convergent subsequence converges to the same limit.
+Uses ε/2 argument combining Cauchy property with subsequence convergence. -/
+lemma tendsto_of_cauchySeq_of_tendsto_subseq {u : ℕ → ℝ} {a : ℝ} {φ : ℕ → ℕ}
+    (hu : CauchySeq u) (hφ : StrictMono φ) (hsub : Tendsto (u ∘ φ) atTop (𝓝 a)) :
+    Tendsto u atTop (𝓝 a) := by
+    -- Rewrite using the ε-N characterisation
+    rw [Metric.tendsto_atTop]
+    intro ε hε
+    -- Get the Cauchy condition in ε-N form
+    have hC := fun δ hδ => Metric.cauchySeq_iff.mp hu δ hδ
+    -- From Cauchy: find N such that |u_m - u_n| < ε/2 for m, n ≥ N
+    rcases hC (ε / 2) (by linarith) with ⟨N, hN⟩
+    -- From subsequence convergence: find K such that |u_{φ(k)} - a| < ε/2 for k ≥ K
+    rcases (Metric.tendsto_atTop.mp hsub) (ε / 2) (by linarith) with ⟨K, hK⟩
+    -- Since φ is strictly increasing, φ(k) → ∞
+    have hφ_atTop : Tendsto φ atTop atTop := hφ.tendsto_atTop
+    -- Find K₁ such that φ(k) ≥ N for all k ≥ K₁
+    rcases Filter.eventually_atTop.mp (Filter.tendsto_atTop.mp hφ_atTop N) with ⟨K₁, hK₁⟩
+    -- Take k₀ = max(K, K₁) to satisfy both conditions
+    let k₀ := max K K₁
+    -- We claim N works as the threshold for convergence
+    refine ⟨N, fun n hn => ?_⟩
+    -- h1: |u_n - u_{φ(k₀)}| < ε/2 (from Cauchy)
+    have h1 : dist (u n) (u (φ k₀)) < ε / 2 := hN n hn (φ k₀) (hK₁ k₀ (le_max_right K K₁))
+    -- h2: |u_{φ(k₀)} - a| < ε/2 (from subsequence convergence)
+    have h2 : dist (u (φ k₀)) a < ε / 2 := hK k₀ (le_max_left K K₁)
+    -- Combine via triangle inequality
+    calc dist (u n) a
+        ≤ dist (u n) (u (φ k₀)) + dist (u (φ k₀)) a := dist_triangle _ _ _
+    _ < ε / 2 + ε / 2 := add_lt_add h1 h2
+    _ = ε := by ring
+\end{minted}
+
+\medskip
+\noindent
+Finally, the main theorem \verb|cauchy_criterion_real_exists_rudin| combines the two directions:
+the forward direction composes Steps 1--3 to produce a limit \(a\), and the reverse direction applies \verb|cauchySeq_of_tendsto|.
+
+\begin{minted}{lean}
+/-- The Cauchy criterion: a sequence in ℝ is Cauchy iff it converges.
+This characterises completeness of the real numbers. -/
+theorem cauchy_criterion_real_exists_rudin (u : ℕ → ℝ) :
+    CauchySeq u ↔ ∃ a : ℝ, Tendsto u atTop (𝓝 a) := by
+    constructor
+    · -- Direction (⇒): Cauchy implies convergent
+    intro hu
+    -- Step 1: Cauchy ⇒ bounded range
+    have hb := cauchySeq_isBounded_range hu
+    -- Step 2: Bounded ⇒ convergent subsequence (Bolzano-Weierstrass)
+    rcases exists_tendsto_subseq_of_bounded hb with ⟨a, φ, hφ, hsub⟩
+    -- Step 3: Cauchy + convergent subsequence ⇒ convergent
+    exact ⟨a, tendsto_of_cauchySeq_of_tendsto_subseq hu hφ hsub⟩
+    · -- Direction (⇐): Convergent implies Cauchy
+    rintro ⟨a, ha⟩
+    exact cauchySeq_of_tendsto ha
+\end{minted}
+
+\section{Challenges}
+
+The primary challenge in this project lay in translating an argument that feels natural on paper into the rigid formalism that Lean demands. Informally, the Cauchy criterion is often presented in a few paragraphs, with the boundedness step dismissed as ``obvious'' and the Bolzano--Weierstrass theorem invoked as a black box. In Lean, every step must be made explicit, and the dependencies between lemmas must be carefully managed. This required decomposing the proof into three distinct helper lemmas, each of which had to be stated and proved independently before being composed in the final theorem.
+
+Working with Mathlib's filter-based approach to convergence presented an initial learning curve. Convergence is expressed as \mintinline{lean}{Tendsto u atTop (𝓝 a)}, which is more abstract than the classical \(\varepsilon\)--\(N\) definition one encounters in undergraduate analysis. Extracting the underlying \(\varepsilon\)--\(N\) characterisation requires knowing to apply bridge lemmas such as \mintinline{lean}{Metric.cauchySeq_iff} and \mintinline{lean}{Metric.tendsto_atTop}. Finding these lemmas in Mathlib was often time-consuming, as the library is vast and the naming conventions were not always intuitive at first.
+
+\section{Reflection}
+
+Formalising the Cauchy criterion revealed the deep interplay between several foundational results in real analysis. The theorem is often stated as a single equivalence, but its proof requires the coordinated application of boundedness arguments, the Bolzano--Weierstrass theorem, and careful \(\varepsilon/2\) estimates. By structuring the Lean development around three helper lemmas---one for each conceptual step---the logical dependencies became transparent in a way that informal exposition tends to obscure.
+
+The process of formalisation reinforced the importance of understanding a proof thoroughly before attempting to encode it. While a human reader can fill in gaps using intuition and prior knowledge, Lean requires every logical transition to be justified. This meant that vague appeals to ``the triangle inequality'' had to be replaced with explicit \mintinline{lean}{calc} blocks, and informal claims like ``\(\varphi(k)\to\infty\) since \(\varphi\) is strictly increasing'' had to be backed by the lemma \mintinline{lean}{StrictMono.tendsto_atTop}. The discipline of formalisation sharpens one's appreciation for the structure underlying even well-known results, and highlights how completeness in \(\mathbb{R}\) rests on precise foundations that Lean makes visible and verifiable.
+
+\section*{Acknowledgements}
+
+I would like to thank Cursor, an AI-powered code editor powered by large language models from OpenAI, Google, and Anthropic, for its assistance during the development of this project. Its suggestions and explanations were helpful in navigating the Mathlib library and debugging Lean code.
+
+\begin{thebibliography}{9}
+\bibitem{rudin}
+Walter Rudin.
+\textit{Principles of Mathematical Analysis}.
+McGraw-Hill, 3rd edition, 1976.
+\end{thebibliography}
+
+\end{document}

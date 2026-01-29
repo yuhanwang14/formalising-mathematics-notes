@@ -1,0 +1,37 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{l+s+sd}{/\PYGZhy{}\PYGZhy{}}\PYG{l+s+sd}{ Cauchy sequences in ℝ have bounded range.}
+\PYG{l+s+sd}{Split the range into a tail controlled by Cauchy condition and a finite prefix. }\PYG{l+s+sd}{\PYGZhy{}/}
+\PYG{k+kd}{lemma}\PYG{+w}{ }\PYG{n}{cauchySeq\PYGZus{}isBounded\PYGZus{}range}\PYG{+w}{ }\PYG{o}{\PYGZob{}}\PYG{n}{u}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{ℕ}\PYG{+w}{ }\PYG{n+nb+bp}{→}\PYG{+w}{ }\PYG{n}{ℝ}\PYG{o}{\PYGZcb{}}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{hu}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{CauchySeq}\PYG{+w}{ }\PYG{n}{u}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{:}
+\PYG{+w}{    }\PYG{n}{Bornology.IsBounded}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{Set.range}\PYG{+w}{ }\PYG{n}{u}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{k+kd}{by}
+\PYG{+w}{    }\PYG{n}{classical}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Convert the Cauchy condition to the ε\PYGZhy{}N form}
+\PYG{+w}{    }\PYG{k}{have}\PYG{+w}{ }\PYG{n}{hC}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{n}{Metric.cauchySeq\PYGZus{}iff.mp}\PYG{+w}{ }\PYG{n}{hu}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Apply with ε = 1 to get the threshold index N}
+\PYG{+w}{    }\PYG{n}{rcases}\PYG{+w}{ }\PYG{n}{hC}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{(}\PYG{k+kd}{by}\PYG{+w}{ }\PYG{n}{norm\PYGZus{}num}\PYG{o}{)}\PYG{+w}{ }\PYG{k}{with}\PYG{+w}{ }\PYG{o}{⟨}\PYG{n}{N}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{hN}\PYG{o}{⟩}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Define the finite prefix: the image of \PYGZob{}0, 1, ..., N\PYGZhy{}1\PYGZcb{} under u}
+\PYG{+w}{    }\PYG{k}{let}\PYG{+w}{ }\PYG{n}{prefixSet}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{Set}\PYG{+w}{ }\PYG{n}{ℝ}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{n}{u}\PYG{+w}{ }\PYG{n+nb+bp}{\PYGZsq{}}\PYG{n+nb+bp}{\PYGZsq{}}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{Set.Iio}\PYG{+w}{ }\PYG{n}{N}\PYG{o}{)}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Show that the full range is contained in the ball ∪ prefix}
+\PYG{+w}{    }\PYG{k}{have}\PYG{+w}{ }\PYG{n}{hsub}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{Set.range}\PYG{+w}{ }\PYG{n}{u}\PYG{+w}{ }\PYG{n+nb+bp}{⊆}\PYG{+w}{ }\PYG{n}{Metric.ball}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{u}\PYG{+w}{ }\PYG{n}{N}\PYG{o}{)}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{n+nb+bp}{∪}\PYG{+w}{ }\PYG{n}{prefixSet}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{k+kd}{by}
+\PYG{+w}{    }\PYG{n}{intro}\PYG{+w}{ }\PYG{n}{x}\PYG{+w}{ }\PYG{n}{hx}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} x is in the range, so x = u(n) for some n}
+\PYG{+w}{    }\PYG{n}{rcases}\PYG{+w}{ }\PYG{n}{hx}\PYG{+w}{ }\PYG{k}{with}\PYG{+w}{ }\PYG{o}{⟨}\PYG{n}{n}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{rfl}\PYG{o}{⟩}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Case split on whether n ≥ N or n \PYGZlt{} N}
+\PYG{+w}{    }\PYG{n}{by\PYGZus{}cases}\PYG{+w}{ }\PYG{n}{hn}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{N}\PYG{+w}{ }\PYG{n+nb+bp}{≤}\PYG{+w}{ }\PYG{n}{n}
+\PYG{+w}{    }\PYG{n+nb+bp}{·}\PYG{+w}{ }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Case n ≥ N: u(n) is in the ball B(u\PYGZus{}N, 1)}
+\PYG{+w}{        }\PYG{n}{left}
+\PYG{+w}{        }\PYG{k}{have}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{dist}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{u}\PYG{+w}{ }\PYG{n}{n}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{u}\PYG{+w}{ }\PYG{n}{N}\PYG{o}{)}\PYG{+w}{ }\PYG{n+nb+bp}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{n}{hN}\PYG{+w}{ }\PYG{n}{n}\PYG{+w}{ }\PYG{n}{hn}\PYG{+w}{ }\PYG{n}{N}\PYG{+w}{ }\PYG{n}{le\PYGZus{}rfl}
+\PYG{+w}{        }\PYG{n}{simpa}\PYG{+w}{ }\PYG{o}{[}\PYG{n}{Metric.mem\PYGZus{}ball}\PYG{o}{]}\PYG{+w}{ }\PYG{n}{using}\PYG{+w}{ }\PYG{n}{this}
+\PYG{+w}{    }\PYG{n+nb+bp}{·}\PYG{+w}{ }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Case n \PYGZlt{} N: u(n) is in the finite prefix}
+\PYG{+w}{        }\PYG{n}{right}
+\PYG{+w}{        }\PYG{k}{have}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{n}\PYG{+w}{ }\PYG{n+nb+bp}{∈}\PYG{+w}{ }\PYG{n}{Set.Iio}\PYG{+w}{ }\PYG{n}{N}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{n}{Nat.lt\PYGZus{}of\PYGZus{}not\PYGZus{}ge}\PYG{+w}{ }\PYG{n}{hn}
+\PYG{+w}{        }\PYG{n}{exact}\PYG{+w}{ }\PYG{o}{⟨}\PYG{n}{n}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{this}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{rfl}\PYG{o}{⟩}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Ball is bounded (metric space property)}
+\PYG{+w}{    }\PYG{k}{have}\PYG{+w}{ }\PYG{n}{hball\PYGZus{}bdd}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{Bornology.IsBounded}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{Metric.ball}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{u}\PYG{+w}{ }\PYG{n}{N}\PYG{o}{)}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{Set}\PYG{+w}{ }\PYG{n}{ℝ}\PYG{o}{)}
+\PYG{+w}{        }\PYG{o}{:=}\PYG{+w}{ }\PYG{n}{Metric.isBounded\PYGZus{}ball}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Finite prefix is bounded (finite sets are bounded)}
+\PYG{+w}{    }\PYG{k}{have}\PYG{+w}{ }\PYG{n}{hprefixSet\PYGZus{}bdd}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{Bornology.IsBounded}\PYG{+w}{ }\PYG{n}{prefixSet}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{k+kd}{by}
+\PYG{+w}{    }\PYG{k}{have}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{Set.Iio}\PYG{+w}{ }\PYG{n}{N}\PYG{o}{)}\PYG{n+nb+bp}{.}\PYG{n}{Finite}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{n}{Set.finite\PYGZus{}Iio}\PYG{+w}{ }\PYG{n}{N}
+\PYG{+w}{    }\PYG{n}{simpa}\PYG{+w}{ }\PYG{o}{[}\PYG{n}{prefixSet}\PYG{o}{]}\PYG{+w}{ }\PYG{n}{using}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{this.image}\PYG{+w}{ }\PYG{n}{u}\PYG{o}{)}\PYG{n+nb+bp}{.}\PYG{n}{isBounded}
+\PYG{+w}{    }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Union of bounded sets is bounded, subset of bounded is bounded}
+\PYG{+w}{    }\PYG{n}{exact}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{hball\PYGZus{}bdd.union}\PYG{+w}{ }\PYG{n}{hprefixSet\PYGZus{}bdd}\PYG{o}{)}\PYG{n+nb+bp}{.}\PYG{n}{subset}\PYG{+w}{ }\PYG{n}{hsub}
+\end{MintedVerbatim}
