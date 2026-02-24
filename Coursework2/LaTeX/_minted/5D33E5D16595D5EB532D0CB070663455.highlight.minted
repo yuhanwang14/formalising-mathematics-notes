@@ -1,0 +1,21 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{l+s+sd}{/\PYGZhy{}\PYGZhy{}}\PYG{l+s+sd}{ The Lebesgue Decomposition: ν = νₛ + (dν}\PYG{l+s+sd}{/}\PYG{l+s+sd}{dμ) • μ where νₛ ⟂ μ.}
+\PYG{l+s+sd}{This is Theorem 4.20 in the lecture notes. }\PYG{l+s+sd}{\PYGZhy{}/}
+\PYG{k+kd}{theorem}\PYG{+w}{ }\PYG{n}{lebesgue\PYGZus{}decomposition}\PYG{+w}{ }\PYG{o}{:}
+\PYG{+w}{    }\PYG{n}{ν}\PYG{+w}{ }\PYG{n+nb+bp}{=}\PYG{+w}{ }\PYG{n}{ν.singularPart}\PYG{+w}{ }\PYG{n}{μ}\PYG{+w}{ }\PYG{n+nb+bp}{+}\PYG{+w}{ }\PYG{n}{μ.withDensity}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{ν.rnDeriv}\PYG{+w}{ }\PYG{n}{μ}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{:=}
+\PYG{+w}{  }\PYG{n}{ν.haveLebesgueDecomposition\PYGZus{}add}\PYG{+w}{ }\PYG{n}{μ}
+
+\PYG{l+s+sd}{/\PYGZhy{}\PYGZhy{}}\PYG{l+s+sd}{ The singular part is mutually singular to μ. }\PYG{l+s+sd}{\PYGZhy{}/}
+\PYG{k+kd}{theorem}\PYG{+w}{ }\PYG{n}{singularPart\PYGZus{}mutuallySingular\PYGZsq{}}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{μ}\PYG{+w}{ }\PYG{n}{ν}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{Measure}\PYG{+w}{ }\PYG{n}{α}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{:}
+\PYG{+w}{    }\PYG{n}{ν.singularPart}\PYG{+w}{ }\PYG{n}{μ}\PYG{+w}{ }\PYG{n+nb+bp}{⟂}\PYG{n+nb+bp}{ₘ}\PYG{+w}{ }\PYG{n}{μ}\PYG{+w}{ }\PYG{o}{:=}
+\PYG{+w}{  }\PYG{n}{ν.mutuallySingular\PYGZus{}singularPart}\PYG{+w}{ }\PYG{n}{μ}
+
+\PYG{l+s+sd}{/\PYGZhy{}\PYGZhy{}}\PYG{l+s+sd}{ The Radon}\PYG{l+s+sd}{\PYGZhy{}}\PYG{l+s+sd}{Nikodym derivative is measurable. }\PYG{l+s+sd}{\PYGZhy{}/}
+\PYG{k+kd}{theorem}\PYG{+w}{ }\PYG{n}{rnDeriv\PYGZus{}measurable\PYGZsq{}}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{μ}\PYG{+w}{ }\PYG{n}{ν}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{Measure}\PYG{+w}{ }\PYG{n}{α}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{Measurable}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{ν.rnDeriv}\PYG{+w}{ }\PYG{n}{μ}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{:=}
+\PYG{+w}{  }\PYG{n}{Measure.measurable\PYGZus{}rnDeriv}\PYG{+w}{ }\PYG{n}{ν}\PYG{+w}{ }\PYG{n}{μ}
+
+\PYG{l+s+sd}{/\PYGZhy{}\PYGZhy{}}\PYG{l+s+sd}{ The absolutely continuous part is indeed absolutely continuous. }\PYG{l+s+sd}{\PYGZhy{}/}
+\PYG{k+kd}{theorem}\PYG{+w}{ }\PYG{n}{withDensity\PYGZus{}rnDeriv\PYGZus{}ac}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{μ}\PYG{+w}{ }\PYG{n}{ν}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{Measure}\PYG{+w}{ }\PYG{n}{α}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{:}
+\PYG{+w}{    }\PYG{n}{μ.withDensity}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{ν.rnDeriv}\PYG{+w}{ }\PYG{n}{μ}\PYG{o}{)}\PYG{+w}{ }\PYG{n+nb+bp}{≪}\PYG{+w}{ }\PYG{n}{μ}\PYG{+w}{ }\PYG{o}{:=}
+\PYG{+w}{  }\PYG{n}{withDensity\PYGZus{}absolutelyContinuous}\PYG{+w}{ }\PYG{n}{μ}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{ν.rnDeriv}\PYG{+w}{ }\PYG{n}{μ}\PYG{o}{)}
+\end{MintedVerbatim}

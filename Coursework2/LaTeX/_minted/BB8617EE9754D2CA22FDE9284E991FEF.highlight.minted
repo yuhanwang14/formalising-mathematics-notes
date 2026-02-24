@@ -1,0 +1,19 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{l+s+sd}{/\PYGZhy{}\PYGZhy{}}\PYG{l+s+sd}{ Absolute continuity: ν ≪ μ means every μ}\PYG{l+s+sd}{\PYGZhy{}}\PYG{l+s+sd}{null set is ν}\PYG{l+s+sd}{\PYGZhy{}}\PYG{l+s+sd}{null. }\PYG{l+s+sd}{\PYGZhy{}/}
+\PYG{k+kd}{lemma}\PYG{+w}{ }\PYG{n}{ac\PYGZus{}def}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{ν}\PYG{+w}{ }\PYG{n+nb+bp}{≪}\PYG{+w}{ }\PYG{n}{μ}\PYG{+w}{ }\PYG{n+nb+bp}{↔}\PYG{+w}{ }\PYG{n+nb+bp}{∀}\PYG{+w}{ }\PYG{n}{s}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{μ}\PYG{+w}{ }\PYG{n}{s}\PYG{+w}{ }\PYG{n+nb+bp}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{n+nb+bp}{→}\PYG{+w}{ }\PYG{n}{ν}\PYG{+w}{ }\PYG{n}{s}\PYG{+w}{ }\PYG{n+nb+bp}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{:=}
+\PYG{+w}{  }\PYG{n}{Iff.rfl}
+
+\PYG{l+s+sd}{/\PYGZhy{}\PYGZhy{}}\PYG{l+s+sd}{ If ν = f • μ (ν has density f w.r.t. μ), then ν ≪ μ. }\PYG{l+s+sd}{\PYGZhy{}/}
+\PYG{k+kd}{theorem}\PYG{+w}{ }\PYG{n}{absolutelyContinuous\PYGZus{}withDensity}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{f}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{α}\PYG{+w}{ }\PYG{n+nb+bp}{→}\PYG{+w}{ }\PYG{n}{ℝ}\PYG{n+nb+bp}{≥}\PYG{l+m+mi}{0}\PYG{n+nb+bp}{∞}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{:}
+\PYG{+w}{    }\PYG{n}{μ.withDensity}\PYG{+w}{ }\PYG{n}{f}\PYG{+w}{ }\PYG{n+nb+bp}{≪}\PYG{+w}{ }\PYG{n}{μ}\PYG{+w}{ }\PYG{o}{:=}
+\PYG{+w}{  }\PYG{n}{withDensity\PYGZus{}absolutelyContinuous}\PYG{+w}{ }\PYG{n}{μ}\PYG{+w}{ }\PYG{n}{f}
+
+\PYG{l+s+sd}{/\PYGZhy{}\PYGZhy{}}\PYG{l+s+sd}{ Mutual singularity is symmetric. }\PYG{l+s+sd}{\PYGZhy{}/}
+\PYG{k+kd}{theorem}\PYG{+w}{ }\PYG{n}{mutuallySingular\PYGZus{}symm}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{μ}\PYG{+w}{ }\PYG{n+nb+bp}{⟂}\PYG{n+nb+bp}{ₘ}\PYG{+w}{ }\PYG{n}{ν}\PYG{+w}{ }\PYG{n+nb+bp}{↔}\PYG{+w}{ }\PYG{n}{ν}\PYG{+w}{ }\PYG{n+nb+bp}{⟂}\PYG{n+nb+bp}{ₘ}\PYG{+w}{ }\PYG{n}{μ}\PYG{+w}{ }\PYG{o}{:=}
+\PYG{+w}{  }\PYG{o}{⟨}\PYG{n}{Measure.MutuallySingular.symm}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{Measure.MutuallySingular.symm}\PYG{o}{⟩}
+
+\PYG{l+s+sd}{/\PYGZhy{}\PYGZhy{}}\PYG{l+s+sd}{ Transitivity of absolute continuity. }\PYG{l+s+sd}{\PYGZhy{}/}
+\PYG{k+kd}{theorem}\PYG{+w}{ }\PYG{n}{absolutelyContinuous\PYGZus{}trans}\PYG{+w}{ }\PYG{o}{\PYGZob{}}\PYG{n}{ρ}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{Measure}\PYG{+w}{ }\PYG{n}{α}\PYG{o}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{o}{(}\PYG{n}{hνμ}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{ν}\PYG{+w}{ }\PYG{n+nb+bp}{≪}\PYG{+w}{ }\PYG{n}{μ}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{hμρ}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{μ}\PYG{+w}{ }\PYG{n+nb+bp}{≪}\PYG{+w}{ }\PYG{n}{ρ}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{ν}\PYG{+w}{ }\PYG{n+nb+bp}{≪}\PYG{+w}{ }\PYG{n}{ρ}\PYG{+w}{ }\PYG{o}{:=}
+\PYG{+w}{  }\PYG{n}{hνμ.trans}\PYG{+w}{ }\PYG{n}{hμρ}
+\end{MintedVerbatim}
