@@ -81,13 +81,7 @@ Let $\mu$ and $\nu$ be $\sigma$-finite measures on a measurable space $(X, \Sigm
 
 Here $\nu \ll \mu$ denotes \emph{absolute continuity}: $\mu(A) = 0$ implies $\nu(A) = 0$ for all measurable $A$. The function $f$ is called the \emph{Radon-Nikodym derivative} of $\nu$ with respect to $\mu$, written $\frac{d\nu}{d\mu}$.
 
-The Radon-Nikodym theorem is foundational throughout mathematics:
-\begin{itemize}
-    \item In probability theory, conditional expectation is defined as a Radon-Nikodym derivative.
-    \item In statistics, likelihood ratios are Radon-Nikodym derivatives.
-    \item In functional analysis, it enables the representation of linear functionals.
-    \item In mathematical finance, the Girsanov theorem relies on Radon-Nikodym derivatives for change of measure.
-\end{itemize}
+The Radon-Nikodym theorem is foundational: conditional expectation in probability, likelihood ratios in statistics, and the Riesz representation theorem in functional analysis all rely on it.
 
 The proof requires a chain of intermediate results:
 \[
@@ -204,28 +198,47 @@ Therefore $\nu = \nu_{ac} = f \cdot \mu$, and $f = \frac{d\nu}{d\mu}$ is the Rad
 \section{Implementation Discussion}
 
 \noindent
-The mathematical development translates into Lean by working within Mathlib's measure theory library, which provides a rich set of abstractions for the objects involved. The key types and notations are:
+The mathematical development translates into Lean by working within Mathlib's measure theory library. Several design choices in Mathlib differ from standard textbook presentations and affect how the proofs are structured.
+
+\emph{Measures take values in $\mathbb{R}_{\ge 0}^\infty$.} In Mathlib, a measure is a function from measurable sets to \mintinline{lean}{ℝ≥0∞} (the type \texttt{ENNReal}), which is $[0,\infty]$ equipped with a semiring structure. Addition and multiplication are defined, but subtraction is \emph{truncated}: $a - b = 0$ whenever $a \le b$. As a consequence, one cannot freely subtract measures or rearrange equalities the way one does with real-valued expressions. To show that a measure value equals zero, the standard idiom is to apply \texttt{le\_antisymm} with an upper bound and \mintinline{lean}{zero_le _} as the lower bound, establishing equality from both directions. This two-sided pattern appears three times in the key lemma (Part~3) alone.
+
+\emph{Mutual singularity is a four-field structure.} The type $\nu \perp_m \mu$ (\texttt{Measure.MutuallySingular}) carries a separating set~$A$, a proof that $A$ is measurable, a proof that $\nu(A) = 0$, and a proof that $\mu(A^c) = 0$. Destructuring with \texttt{rcases} gives direct access to all four components, which is why the key lemma proof can immediately name the set and its properties.
+
+\emph{$\sigma$-finiteness is a type class.} The hypothesis \mintinline{lean}{[SigmaFinite μ]} lets Lean's instance resolution automatically synthesise the \texttt{HaveLebesgueDecomposition} instance needed by the Lebesgue decomposition. This means that once both measures are declared $\sigma$-finite in a \texttt{section}, calling \texttt{haveLebesgueDecomposition\_add} requires no explicit construction---the instance is found automatically.
+
+\emph{Absolute continuity is definitional.} The notation $\nu \ll \mu$ unfolds to $\forall s,\; \mu(s) = 0 \to \nu(s) = 0$, and the proof term \texttt{Iff.rfl} witnesses this (lemma \texttt{ac\_def}). Applying a hypothesis \texttt{hac~:~$\nu \ll \mu$} to a proof \texttt{hs~:~$\mu(s) = 0$} directly returns $\nu(s) = 0$, with no rewriting needed.
+
+Other key notations used throughout:
 \begin{itemize}
-  \item signed measures as \mintinline{lean}{SignedMeasure α}, with positive/negative sets written \mintinline{lean}{0 ≤[P] s} and \mintinline{lean}{s ≤[Pᶜ] 0},
-  \item absolute continuity written as \mintinline{lean}{ν ≪ μ} (i.e.\ \verb|Measure.AbsolutelyContinuous|),
-  \item mutual singularity written as \mintinline{lean}{ν ⟂ₘ μ} (i.e.\ \verb|Measure.MutuallySingular|),
-  \item the density construction \mintinline{lean}{μ.withDensity f}, which builds the measure $A\mapsto\int_A f\,d\mu$,
-  \item the Radon-Nikodym derivative \mintinline{lean}{ν.rnDeriv μ} and the singular part \mintinline{lean}{ν.singularPart μ},
-  \item the Jordan decomposition accessed via \mintinline{lean}{s.toJordanDecomposition}.
+\item \texttt{SignedMeasure $\alpha$} --- signed measures on $\alpha$.
+\item \texttt{$\mu$.withDensity f} --- the measure $A\mapsto\int_A f\,d\mu$.
+\item \texttt{$\nu$.rnDeriv $\mu$} / \texttt{$\nu$.singularPart $\mu$} --- the Radon-Nikodym derivative and singular part.
+\item \texttt{s.toJordanDecomposition} --- access to the Jordan decomposition.
 \end{itemize}
+
 The formalisation is split into six parts, mirroring the chain of results in the mathematical development.
 
 \medskip
 \noindent
+\textbf{What is mine and what comes from Mathlib.}
+Mathlib already contains the full chain from Hahn decomposition through to the Radon-Nikodym derivative, so none of the individual components are new. My contribution is the \emph{organisation}: I state each theorem in the classical form found in the lecture notes (Theorems~4.13, 4.19, 4.20, and Corollary~4.23), assemble them into a single self-contained file that follows the logical chain
+\[
+\text{Hahn} \;\Rightarrow\; \text{Jordan} \;\Rightarrow\; \text{Lebesgue} \;\Rightarrow\; \text{Radon-Nikodym},
+\]
+and fill in the glue proofs that connect library facts. The most substantial original arguments are the key lemma in Part~3 (\texttt{eq\_zero\_of\_ac\_of\_mutually\-Singular}) and the forward direction of \texttt{radon\_nikodym} in Part~5: they require splitting sets, estimating measures via the decomposition, and chaining absolute-continuity and mutual-singularity hypotheses in multi-step \mintinline{lean}{calc} blocks. Parts~1, 2, 4, and~6 are thin wrappers around existing Mathlib lemmas, deliberately kept short to show that the infrastructure is available and to explain the role each result plays.
+
+\medskip
+\noindent
 \textbf{Part 1 (Hahn Decomposition).}
-The Hahn decomposition theorem asserts that every signed measure $s$ admits a partition of the space into a positive set $P$ and a negative set $P^c$. Mathlib already provides this, so our theorem \verb|hahn_decomposition_exists| is a thin wrapper around the library. The auxiliary result (Lemma~4.16 in the lecture notes) extracts a negative subset from any set of negative measure, again wrapping existing Mathlib machinery.
+The Hahn decomposition theorem asserts that every signed measure $s$ admits a partition of the space into a positive set $P$ and a negative set $P^c$. The notation \texttt{0~$\le$[P]~s} means the restriction of $s$ to $P$ is non-negative on every measurable subset; Lean represents this as a partial order on restricted signed measures. Mathlib already provides the decomposition, so \verb|hahn_decomposition_exists| is a one-line appeal to \texttt{exists\_compl\_positive\_negative}.
+
+The auxiliary result (Lemma~4.16) is the only Part~1 proof that uses tactics. The Mathlib lemma \texttt{exists\_subset\_restrict\_nonpos} returns its existential fields in the order $(j, \mathit{meas}, \mathit{subset}, \mathit{neg}, \mathit{val})$, but our statement orders them as $(j, \mathit{subset}, \mathit{meas}, \mathit{neg}, \mathit{val})$. The \texttt{obtain} tactic destructures the Mathlib result, and \texttt{exact} re-packs the components in the new order.
 
 \begin{minted}{lean}
-/-- The Hahn Decomposition Theorem: Every signed measure admits a decomposition
-X = P ∪ N where P is positive and N is negative. -/
+/-- The Hahn Decomposition Theorem (Theorem 4.13). -/
 theorem hahn_decomposition_exists :
-    ∃ (P : Set α), MeasurableSet P ∧ 0 ≤[P] s ∧ s ≤[Pᶜ] 0 := by
-  exact SignedMeasure.exists_compl_positive_negative s
+    ∃ (P : Set α), MeasurableSet P ∧ 0 ≤[P] s ∧ s ≤[Pᶜ] 0 :=
+  SignedMeasure.exists_compl_positive_negative s
 
 /-- A set of negative measure contains a negative subset (Lemma 4.16). -/
 theorem exists_negative_subset_of_negative_measure {i : Set α} (hi_neg : s i < 0) :
@@ -238,41 +251,35 @@ theorem exists_negative_subset_of_negative_measure {i : Set α} (hi_neg : s i < 
 \medskip
 \noindent
 \textbf{Part 2 (Jordan Decomposition).}
-The Jordan decomposition writes a signed measure as $s = s^+ - s^-$ where $s^+$ and $s^-$ are mutually singular positive measures. In Lean, we define \verb|positivePart| and \verb|negativePart| by extracting the components of \mintinline{lean}{s.toJordanDecomposition}. Mathlib records these as finite measures automatically via type class instances. The decomposition identity \verb|jordan_decomposition_eq| unfolds the definitions and appeals to the library lemma
-\verb|toSignedMeasure_toJordanDecomposition|,
-while mutual singularity is inherited directly from the Jordan decomposition structure.
+We define \verb|positivePart| and \verb|negativePart| by extracting the components of \texttt{s.toJordanDecomposition}. Both are marked \texttt{noncomputable} because \texttt{toJordanDecomposition} relies on classical choice (the Hahn decomposition is non-constructive). The \texttt{instance} declarations register \texttt{IsFiniteMeasure} with Lean's type class system, so that downstream lemmas requiring a finite measure can use \texttt{positivePart~s} without an explicit proof.
+
+Both \texttt{jordan\_decomposition\_eq} and \texttt{jordan\_parts\_mutuallySingular} follow the same two-step pattern. First, \mintinline{lean}{unfold positivePart negativePart} expands our wrapper definitions to the underlying \texttt{toJordanDecomposition.posPart}/\texttt{negPart}, at which point the goal matches the Mathlib lemma exactly. Then \texttt{exact} supplies the proof term. In the decomposition identity, \texttt{.symm} flips the Mathlib equality $s^+ - s^- = s$ into $s = s^+ - s^-$. The \texttt{unfold} step is essential: without it, Lean sees \texttt{positivePart~s} and \texttt{toJordanDecomposition.posPart} as syntactically different, and \texttt{exact} fails.
 
 \begin{minted}{lean}
-/-- The positive part of the Jordan decomposition. -/
 noncomputable def positivePart (s : SignedMeasure α) : Measure α :=
   s.toJordanDecomposition.posPart
 
-/-- The negative part of the Jordan decomposition. -/
 noncomputable def negativePart (s : SignedMeasure α) : Measure α :=
   s.toJordanDecomposition.negPart
 
-/-- Instance: the positive part is a finite measure. -/
 instance (s : SignedMeasure α) : IsFiniteMeasure (positivePart s) :=
   s.toJordanDecomposition.posPart_finite
 
-/-- Instance: the negative part is a finite measure. -/
 instance (s : SignedMeasure α) : IsFiniteMeasure (negativePart s) :=
   s.toJordanDecomposition.negPart_finite
 
-/-- The Jordan Decomposition: s = s⁺ - s⁻.
-This is Theorem 4.19 in the lecture notes. -/
+/-- s = s⁺ - s⁻ (Theorem 4.19). -/
 theorem jordan_decomposition_eq :
     s = (positivePart s).toSignedMeasure - (negativePart s).toSignedMeasure := by
   unfold positivePart negativePart
   exact s.toSignedMeasure_toJordanDecomposition.symm
 
-/-- The positive and negative parts are mutually singular. -/
 theorem jordan_parts_mutuallySingular :
     positivePart s ⟂ₘ negativePart s := by
   unfold positivePart negativePart
   exact s.toJordanDecomposition.mutuallySingular
 
-/-- The total variation measure |s| = s⁺ + s⁻. -/
+/-- |s| = s⁺ + s⁻. -/
 noncomputable def totalVariation (s : SignedMeasure α) : Measure α :=
   positivePart s + negativePart s
 \end{minted}
@@ -280,23 +287,25 @@ noncomputable def totalVariation (s : SignedMeasure α) : Measure α :=
 \medskip
 \noindent
 \textbf{Part 3 (Absolute Continuity and Mutual Singularity).}
-The two fundamental relations between measures---absolute continuity ($\nu \ll \mu$) and mutual singularity ($\nu \perp_m \mu$)---are ``opposite'' in a precise sense: if both hold simultaneously, then $\nu = 0$. This key lemma is the engine that drives the Radon-Nikodym theorem. We first record several basic facts: that absolute continuity is definitionally equivalent to preserving null sets, that \mintinline{lean}{μ.withDensity f ≪ μ} (the easy direction of Radon-Nikodym), that mutual singularity is symmetric, and that absolute continuity is transitive.
+We first record several basic facts, all proved as proof terms (no \texttt{by} blocks):
+\begin{itemize}
+\item \texttt{ac\_def} uses \texttt{Iff.rfl} because $\nu \ll \mu$ is \emph{definitionally} equal to $\forall s,\, \mu(s) = 0 \to \nu(s) = 0$.
+\item \texttt{mutuallySingular\_symm} builds the $\leftrightarrow$ with the anonymous constructor $\langle$\texttt{.symm, .symm}$\rangle$, supplying one direction in each component.
+\item \texttt{absolutelyContinuous\_trans} uses dot notation \texttt{h$\nu\mu$.trans~h$\mu\rho$}, calling the \texttt{trans} method on the absolute continuity proof.
+\end{itemize}
+We then prove the key lemma: if $\nu \ll \mu$ and $\nu \perp_m \mu$ hold simultaneously, then $\nu = 0$.
 
 \begin{minted}{lean}
-/-- Absolute continuity: ν ≪ μ means every μ-null set is ν-null. -/
 lemma ac_def : ν ≪ μ ↔ ∀ s, μ s = 0 → ν s = 0 :=
   Iff.rfl
 
-/-- If ν = f • μ (ν has density f w.r.t. μ), then ν ≪ μ. -/
 theorem absolutelyContinuous_withDensity (f : α → ℝ≥0∞) :
     μ.withDensity f ≪ μ :=
   withDensity_absolutelyContinuous μ f
 
-/-- Mutual singularity is symmetric. -/
 theorem mutuallySingular_symm : μ ⟂ₘ ν ↔ ν ⟂ₘ μ :=
   ⟨Measure.MutuallySingular.symm, Measure.MutuallySingular.symm⟩
 
-/-- Transitivity of absolute continuity. -/
 theorem absolutelyContinuous_trans {ρ : Measure α}
     (hνμ : ν ≪ μ) (hμρ : μ ≪ ρ) : ν ≪ ρ :=
   hνμ.trans hμρ
@@ -305,18 +314,22 @@ theorem absolutelyContinuous_trans {ρ : Measure α}
 \smallskip
 \noindent
 \emph{Key lemma ($\nu \ll \mu$ and $\nu \perp_m \mu$ implies $\nu = 0$).}
-The proof of \verb|eq_zero_of_ac_of_mutuallySingular| is the most substantial manual argument in the formalisation. From mutual singularity we obtain a separating set $A$ with $\nu(A) = 0$ and $\mu(A^c) = 0$. To show $\nu(s) = 0$ for an arbitrary measurable set $s$, we split it as $s = (s \cap A) \cup (s \cap A^c)$. The first piece satisfies $\nu(s \cap A) \le \nu(A) = 0$; the second satisfies $\mu(s \cap A^c) \le \mu(A^c) = 0$, and absolute continuity then gives $\nu(s \cap A^c) = 0$. The \mintinline{lean}{calc} block assembles these estimates.
+The proof of \verb|eq_zero_of_ac_of_mutuallySingular| is the most substantial manual argument. It proceeds in three stages:
+\begin{enumerate}
+\item \texttt{rcases hms with $\langle$A, hA\_meas, h$\nu$A, h$\mu$Ac$\rangle$} destructures the \texttt{MutuallySingular} structure into its four fields. Then \texttt{ext~s~hs} applies measure extensionality, reducing the goal $\nu = 0$ to showing $\nu(s) = 0$ for an arbitrary measurable set~$s$ (binding both \texttt{s} and its measurability proof \texttt{hs}).
+
+\item We split $s = (s \cap A) \cup (s \cap A^c)$. Applying \texttt{measure\_union} requires a \texttt{Disjoint} proof (via \texttt{Set.disjoint\_iff} and membership destructuring) and a \texttt{MeasurableSet} proof for the second set (\texttt{hs.inter hA\_meas.compl}).
+
+\item The \texttt{calc} block chains $\nu(s) = \nu(s \cap A) + \nu(s \cap A^c) = 0 + 0 = 0$. The step to $0 + 0$ uses \texttt{congr~1}, which splits the addition into two subgoals---one per summand. The first vanishes by monotonicity ($\nu(s \cap A) \le \nu(A) = 0$); the second by chaining monotonicity with absolute continuity, using the \texttt{ENNReal} pattern described in the preamble.
+\end{enumerate}
 
 \begin{minted}{lean}
-/-- Key lemma: If ν ≪ μ and ν ⟂ μ, then ν = 0.
-This is crucial for the Radon-Nikodym theorem. -/
+/-- ν ≪ μ and ν ⟂ μ together force ν = 0. From the separating set A (with ν(A) = 0,
+μ(Aᶜ) = 0), any measurable s splits as (s ∩ A) ∪ (s ∩ Aᶜ) and both pieces vanish. -/
 theorem eq_zero_of_ac_of_mutuallySingular (hac : ν ≪ μ) (hms : ν ⟂ₘ μ) :
     ν = 0 := by
-  -- From mutual singularity, get the separating set A
   rcases hms with ⟨A, hA_meas, hνA, hμAc⟩
-  -- Show ν = 0 by showing ν(s) = 0 for all measurable s
   ext s hs
-  -- Split s into s ∩ A and s ∩ Aᶜ
   have hsplit : s = (s ∩ A) ∪ (s ∩ Aᶜ) := by rw [inter_union_compl]
   have hdisj : Disjoint (s ∩ A) (s ∩ Aᶜ) := by
     rw [Set.disjoint_iff]
@@ -326,10 +339,8 @@ theorem eq_zero_of_ac_of_mutuallySingular (hac : ν ≪ μ) (hms : ν ⟂ₘ μ)
     _ = ν (s ∩ A) + ν (s ∩ Aᶜ) := measure_union hdisj (hs.inter hA_meas.compl)
     _ = 0 + 0 := by
         congr 1
-        -- ν(s ∩ A) ≤ ν(A) = 0
         · exact le_antisymm
             (measure_mono inter_subset_right |>.trans (le_of_eq hνA)) (zero_le _)
-        -- ν(s ∩ Aᶜ) = 0 because μ(s ∩ Aᶜ) ≤ μ(Aᶜ) = 0 and ν ≪ μ
         · have hμ : μ (s ∩ Aᶜ) ≤ μ Aᶜ := measure_mono inter_subset_right
           exact hac (hμ.trans (le_of_eq hμAc) |>.antisymm (zero_le _))
     _ = 0 := add_zero 0
@@ -338,25 +349,27 @@ theorem eq_zero_of_ac_of_mutuallySingular (hac : ν ≪ μ) (hms : ν ⟂ₘ μ)
 \medskip
 \noindent
 \textbf{Part 4 (Lebesgue Decomposition).}
-The Lebesgue decomposition states that every $\sigma$-finite measure $\nu$ can be written as $\nu = \nu_s + f \cdot \mu$ where $\nu_s \perp \mu$ and $f = d\nu/d\mu$ is the Radon-Nikodym derivative. Mathlib provides the heavy machinery for this through its \verb|HaveLebesgueDecomposition| type class, which is automatically synthesised for $\sigma$-finite measures. We wrap the four key facts: the decomposition identity, mutual singularity of the singular part, measurability of the Radon-Nikodym derivative, and absolute continuity of the density part.
+The forward direction of Radon-Nikodym (Part~5) needs four facts from the Lebesgue decomposition:
+\begin{enumerate}
+\item[(i)] the identity $\nu = \nu_s + f\cdot\mu$, to isolate the singular part;
+\item[(ii)] $\nu_s \perp \mu$, which with the key lemma from Part~3 will kill $\nu_s$;
+\item[(iii)] measurability of $f = d\nu/d\mu$, required to exhibit a valid density;
+\item[(iv)] $f\cdot\mu \ll \mu$, used in the reverse direction.
+\end{enumerate}
+Mathlib constructs the decomposition internally via its \texttt{HaveLebesgueDecomposition} type class, which is automatically synthesised for $\sigma$-finite measures. We extract these four facts as named lemmas so that Part~5 can cite them directly.
 
 \begin{minted}{lean}
-/-- The Lebesgue Decomposition: ν = νₛ + (dν/dμ) • μ where νₛ ⟂ μ.
-This is Theorem 4.20 in the lecture notes. -/
 theorem lebesgue_decomposition :
     ν = ν.singularPart μ + μ.withDensity (ν.rnDeriv μ) :=
   ν.haveLebesgueDecomposition_add μ
 
-/-- The singular part is mutually singular to μ. -/
 theorem singularPart_mutuallySingular' (μ ν : Measure α) :
     ν.singularPart μ ⟂ₘ μ :=
   ν.mutuallySingular_singularPart μ
 
-/-- The Radon-Nikodym derivative is measurable. -/
 theorem rnDeriv_measurable' (μ ν : Measure α) : Measurable (ν.rnDeriv μ) :=
   Measure.measurable_rnDeriv ν μ
 
-/-- The absolutely continuous part is indeed absolutely continuous. -/
 theorem withDensity_rnDeriv_ac (μ ν : Measure α) :
     μ.withDensity (ν.rnDeriv μ) ≪ μ :=
   withDensity_absolutelyContinuous μ (ν.rnDeriv μ)
@@ -365,25 +378,34 @@ theorem withDensity_rnDeriv_ac (μ ν : Measure α) :
 \medskip
 \noindent
 \textbf{Part 5 (Radon-Nikodym Theorem).}
-The main theorem \verb|radon_nikodym| combines all the preceding results. The reverse direction ($\Leftarrow$) is straightforward: if $\nu = f \cdot \mu$, then absolute continuity follows from the library. The forward direction ($\Rightarrow$) is the heart of the argument. We use \mintinline{lean}{ν.rnDeriv μ} as the candidate density and invoke the Lebesgue decomposition to write $\nu = \nu_s + f \cdot \mu$. To eliminate the singular part, we show $\nu_s \ll \mu$ by proving $\nu_s(s) \le \nu(s)$ via the decomposition and then appealing to $\nu \ll \mu$. Combined with $\nu_s \perp_m \mu$ from the Lebesgue decomposition, the key lemma gives $\nu_s = 0$, and a \mintinline{lean}{calc} block concludes $\nu = f \cdot \mu$.
+The goal is a biconditional, so \mintinline{lean}{constructor} splits it into two subgoals (forward and reverse).
+
+\emph{Forward direction ($\Rightarrow$).} We receive \texttt{hac~:~$\nu \ll \mu$} via \texttt{intro}. Then \texttt{use~$\nu$.rnDeriv~$\mu$} provides the existential witness, and \texttt{constructor} splits the remaining $\wedge$ into measurability and the identity $\nu = \mu.\texttt{withDensity}\;f$. The Lebesgue decomposition and singular-part lemmas are loaded with named arguments \texttt{($\mu$ := $\mu$)~($\nu$ := $\nu$)} because both are section variables of the same type, so Lean cannot determine which is which from the goal alone.
+
+To show $\nu_s \ll \mu$, we unfold absolute continuity: \texttt{intro~s~hs} introduces a set $s$ with $\mu(s) = 0$ and we must prove $\nu_s(s) = 0$. The key step is a three-line \texttt{calc} showing $\nu_s(s) \le \nu(s)$:
+\begin{enumerate}
+\item \texttt{le\_add\_of\_nonneg\_right (zero\_le \_)} adds the non-negative \texttt{withDensity} term;
+\item \texttt{(Measure.add\_apply \_ \_ \_).symm} rewrites pointwise addition as the sum measure applied to $s$;
+\item \texttt{rw [$\leftarrow$ hdecomp]} replaces the sum with $\nu$.
+\end{enumerate}
+The outer \texttt{le\_antisymm} closes $\nu_s(s) = 0$ using this bound and $\nu(s) = 0$ from \texttt{hac}. With $\nu_s \ll \mu$ and $\nu_s \perp_m \mu$ in hand, the key lemma gives $\nu_s = 0$, and a final \texttt{calc} block chains $\nu = \nu_s + f \cdot \mu = 0 + f \cdot \mu = f \cdot \mu$.
+
+\emph{Reverse direction ($\Leftarrow$).} The tactic \texttt{rintro} combines \texttt{intro} and \texttt{rcases}: it introduces the witness~$f$, discards the measurability proof with~\texttt{\_}, and names the identity~\texttt{hf\_eq}. After \texttt{rw~[hf\_eq]} rewrites $\nu$ to $\mu$\texttt{.withDensity}~$f$, the goal is closed by the library lemma \texttt{withDensity\_absolutelyContinuous}.
 
 \begin{minted}{lean}
-/-- The Radon-Nikodym Theorem: ν ≪ μ iff ν has a density with respect to μ.
-This is Corollary 4.23 in the lecture notes. -/
+/-- The Radon-Nikodym Theorem (Corollary 4.23).
+(⇐) Immediate from `withDensity_absolutelyContinuous`.
+(⇒) Lebesgue gives ν = νₛ + f • μ with νₛ ⟂ μ. Since νₛ ≤ ν ≪ μ we get νₛ ≪ μ,
+    and `eq_zero_of_ac_of_mutuallySingular` forces νₛ = 0. -/
 theorem radon_nikodym :
     ν ≪ μ ↔ ∃ f : α → ℝ≥0∞, Measurable f ∧ ν = μ.withDensity f := by
   constructor
-  · -- Direction (⇒): Absolute continuity implies existence of density
-    intro hac
-    -- The Radon-Nikodym derivative provides the density
+  · intro hac
     use ν.rnDeriv μ
     constructor
     · exact Measure.measurable_rnDeriv ν μ
-    · -- By Lebesgue decomposition: ν = νₛ + f • μ
-      have hdecomp := lebesgue_decomposition (μ := μ) (ν := ν)
-      -- νₛ ⟂ μ
+    · have hdecomp := lebesgue_decomposition (μ := μ) (ν := ν)
       have hms := singularPart_mutuallySingular' (μ := μ) (ν := ν)
-      -- νₛ ≪ μ because νₛ ≤ ν and ν ≪ μ
       have hac_singular : ν.singularPart μ ≪ μ := by
         intro s hs
         have h : ν.singularPart μ s ≤ ν s := by
@@ -393,16 +415,12 @@ theorem radon_nikodym :
             _ = (ν.singularPart μ + μ.withDensity (ν.rnDeriv μ)) s :=
                 (Measure.add_apply _ _ _).symm
             _ = ν s := by rw [← hdecomp]
-        have hν : ν s = 0 := hac hs
-        exact le_antisymm (h.trans (le_of_eq hν)) (zero_le _)
-      -- Since νₛ ≪ μ and νₛ ⟂ μ, we have νₛ = 0
+        exact le_antisymm (h.trans (le_of_eq (hac hs))) (zero_le _)
       have hzero := eq_zero_of_ac_of_mutuallySingular hac_singular hms
-      -- Therefore ν = f • μ
       calc ν = ν.singularPart μ + μ.withDensity (ν.rnDeriv μ) := hdecomp
         _ = 0 + μ.withDensity (ν.rnDeriv μ) := by rw [hzero]
         _ = μ.withDensity (ν.rnDeriv μ) := zero_add _
-  · -- Direction (⇐): Existence of density implies absolute continuity
-    rintro ⟨f, _, hf_eq⟩
+  · rintro ⟨f, _, hf_eq⟩
     rw [hf_eq]
     exact withDensity_absolutelyContinuous μ f
 \end{minted}
@@ -410,58 +428,51 @@ theorem radon_nikodym :
 \smallskip
 \noindent
 \emph{Corollaries.}
-Two important consequences follow immediately. The first, \verb|withDensity_rnDeriv_eq'|, states that if $\nu \ll \mu$ then $\nu$ equals the measure built from its own Radon-Nikodym derivative. The second, \verb|rnDeriv_unique|, establishes that the derivative is unique $\mu$-almost everywhere: if two measurable functions $f$ and $g$ define the same measure via \mintinline{lean}{withDensity}, they must agree $\mu$-a.e., using Mathlib's \verb|withDensity_eq_iff_of_sigmaFinite|.
+If $\nu \ll \mu$ then $\nu$ equals the measure built from its own Radon-Nikodym derivative (\verb|withDensity_rnDeriv_eq'|). The derivative is unique $\mu$-a.e.: if two measurable functions define the same measure via \mintinline{lean}{withDensity}, they agree $\mu$-a.e.\ (\verb|rnDeriv_unique|).
 
 \begin{minted}{lean}
-/-- Corollary: If ν ≪ μ, then μ.withDensity (ν.rnDeriv μ) = ν. -/
 theorem withDensity_rnDeriv_eq' (hac : ν ≪ μ) :
     μ.withDensity (ν.rnDeriv μ) = ν :=
   Measure.withDensity_rnDeriv_eq ν μ hac
 
-/-- The Radon-Nikodym derivative is unique almost everywhere. -/
+/-- The Radon-Nikodym derivative is unique μ-a.e. -/
 theorem rnDeriv_unique (μ : Measure α) [SigmaFinite μ] {f g : α → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g)
     (hf_eq : μ.withDensity f = μ.withDensity g) :
-    f =ᵐ[μ] g := by
-  exact (withDensity_eq_iff_of_sigmaFinite hf.aemeasurable hg.aemeasurable).mp hf_eq
+    f =ᵐ[μ] g :=
+  (withDensity_eq_iff_of_sigmaFinite hf.aemeasurable hg.aemeasurable).mp hf_eq
 \end{minted}
 
 \medskip
 \noindent
 \textbf{Part 6 (Applications).}
-Finally, we record two standard consequences of the Radon-Nikodym theorem. The \emph{chain rule} states that for $\nu \ll \mu$, the Radon-Nikodym derivatives compose multiplicatively: $\frac{d\nu}{d\mu} \cdot \frac{d\mu}{d\rho} = \frac{d\nu}{d\rho}$ holds $\rho$-almost everywhere. The \emph{self-derivative} states that $\frac{d\nu}{d\nu} = 1$ a.e. Both are direct applications of Mathlib library lemmas.
+We record two standard consequences. Both equalities are stated with \mintinline{lean}{=ᵐ[ρ]}, which is Lean notation for \texttt{Filter.EventuallyEq (Measure.ae $\rho$)}: two functions agree $\rho$-almost everywhere, i.e.\ the set where they differ has $\rho$-measure zero. The section requires three \mintinline{lean}{[SigmaFinite]} instances (for $\mu$, $\nu$, and $\rho$) because the chain rule involves three measures; Lean's instance resolution must find all three to apply the Mathlib lemma. Both results are one-line proof terms.
 
 \begin{minted}{lean}
-/-- Chain rule for Radon-Nikodym derivatives.
-If ν ≪ μ, then ν.rnDeriv μ * μ.rnDeriv ρ =ᵐ[ρ] ν.rnDeriv ρ. -/
+/-- Chain rule: dν/dμ · dμ/dρ = dν/dρ  ρ-a.e. -/
 theorem rnDeriv_chain (hνμ : ν ≪ μ) :
     ν.rnDeriv μ * μ.rnDeriv ρ =ᵐ[ρ] ν.rnDeriv ρ :=
   Measure.rnDeriv_mul_rnDeriv hνμ
 
-/-- Self-derivative: ν.rnDeriv ν = 1 a.e. -/
 theorem rnDeriv_self : ν.rnDeriv ν =ᵐ[ν] 1 :=
   Measure.rnDeriv_self ν
 \end{minted}
 
 \section{Challenges}
 
-The primary challenge in this project was managing the complexity of the theorem's dependencies. Unlike simpler results that can be proved in isolation, the Radon-Nikodym theorem requires a carefully constructed tower of results: Hahn decomposition, Jordan decomposition, and Lebesgue decomposition must all be in place before the main theorem can be stated and proved.
+The most time-consuming step was converting \texttt{ENNReal} inequalities into equalities in the key lemma (Part~3). On paper, showing $\nu(s \cap A^c) = 0$ from $\mu(s \cap A^c) \le \mu(A^c) = 0$ and $\nu \ll \mu$ is one line. In Lean, \texttt{measure\_mono} returns an inequality $\mu(s \cap A^c) \le \mu(A^c)$, but the hypothesis \texttt{hac~:~$\nu \ll \mu$} expects an \emph{equality} $\mu(s \cap A^c) = 0$. Bridging this gap required chaining the inequality with \texttt{le\_of\_eq} to reach $\mu(s \cap A^c) \le 0$, then applying \texttt{.antisymm~(zero\_le~\_)} to close the two-sided bound. This single conversion---invisible on paper---took more debugging time than the entire paper proof of the lemma, and illustrates how \texttt{ENNReal}'s truncated arithmetic (no subtraction, no negation) forces a bounding-then-closing proof style that has no pencil-and-paper analogue.
 
-Working with Mathlib's measure theory library presented both advantages and challenges. On one hand, the library provides sophisticated machinery for signed measures, absolute continuity, and mutual singularity. On the other hand, finding the right lemmas and understanding their precise statements required significant exploration. For instance, the relationship between \texttt{SignedMeasure}, \texttt{JordanDecomposition}, and \texttt{Measure} involves several coercion and conversion functions that had to be understood.
-
-Another challenge was the handling of $\sigma$-finiteness assumptions. While the mathematical statement of Radon-Nikodym requires $\sigma$-finite measures, Lean requires these assumptions to be explicitly tracked through type class instances like \texttt{[SigmaFinite μ]}. Ensuring these instances were available in the right places required careful attention.
+A second challenge was scoping \texttt{[SigmaFinite]} assumptions correctly. I initially wrote the key lemma inside the same \texttt{section} as the Lebesgue decomposition (Parts~4--5), which silently added $\sigma$-finiteness hypotheses to every result in that section. This was wrong: the key lemma holds for arbitrary measures, and the extra hypotheses would weaken its applicability. Recognising the problem required checking Lean's \texttt{\#check} output and noticing the unwanted \texttt{[SigmaFinite~$\nu$]} argument. The fix was to move Part~3 into its own section with only \texttt{variable~\{$\mu$~$\nu$~:~Measure~$\alpha$\}}, so that Lean does not insert finiteness assumptions where none are needed.
 
 \section{Reflection}
 
-Formalising the Radon-Nikodym theorem revealed the elegant logical structure underlying this fundamental result. The proof strategy---using the Lebesgue decomposition and the key lemma that absolute continuity plus mutual singularity implies zero---is conceptually simple once stated clearly, but its formalisation requires precise bookkeeping of measure-theoretic concepts.
+Formalising the Radon-Nikodym theorem forced me to confront details that paper proofs leave implicit. The clearest example was the claim ``$\nu_s \le \nu$'' in Part~5: on paper this is a throwaway remark, but in Lean it required a three-step \texttt{calc} block through the Lebesgue decomposition, and working through it made clear that the inequality rests on the non-negativity of \texttt{$\mu$.withDensity}, not on any intrinsic property of the singular part. More broadly, the \texttt{ext~s~hs} tactic made visible how much of measure theory is $\sigma$-algebra bookkeeping---every set operation must carry a measurability certificate, a requirement that is entirely invisible in handwritten proofs.
 
-The experience highlighted how measure theory in Mathlib is designed around a few key abstractions. The notions of \texttt{AbsolutelyContinuous} ($\ll$) and \texttt{MutuallySingular} ($\perp_m$) are defined in terms of null sets, and most theorems about measures can be reduced to arguments about these two relations. The Radon-Nikodym theorem is essentially a statement about when absolute continuity can be ``witnessed'' by a density function.
-
-The project also demonstrated the power of building on existing library results. While I stated and proved the key structural theorems (like the Jordan decomposition and the main Radon-Nikodym equivalence), the underlying technical machinery---such as the existence of the Lebesgue decomposition and the measurability of the Radon-Nikodym derivative---was provided by Mathlib. This allowed the formalisation to focus on the conceptual content of the theorem rather than low-level measure-theoretic details.
+The submitted Lean file compiles without errors on the project toolchain and contains no \texttt{sorry} axioms.
 
 \section*{Acknowledgements}
 
-I would like to thank Cursor, an AI-powered code editor powered by large language models from OpenAI, Google, and Anthropic, for its assistance during the development of this project. Its suggestions and explanations were helpful in navigating the Mathlib library and debugging Lean code.
+I used Cursor, an AI-powered code editor backed by large language models from OpenAI, Google, and Anthropic. AI tools assisted with Mathlib library navigation (locating lemma names and understanding API conventions) and with debugging tactic-level errors. The mathematical choices---which theorems to include, how to structure the proof chain, and the design of each proof---as well as the final writeup are my own work.
 
 \begin{thebibliography}{9}
 \bibitem{rudin}

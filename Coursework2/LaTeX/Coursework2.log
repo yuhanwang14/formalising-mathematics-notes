@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.10.19)  24 FEB 2026 16:28
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.10.19)  26 FEB 2026 20:58
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -491,59 +491,79 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 \pydata@fh@_EF126A32FC654F2F7FB4C43AAFA26ECA.data.minted=\write5
 \openout5 = `_EF126A32FC654F2F7FB4C43AAFA26ECA.data.minted'.
 
-runsystem(latexminted config  --timestamp 20260224162805 EF126A32FC654F2F7FB4C43AAFA26ECA)...executed safely (allowed).
+runsystem(latexminted config  --timestamp 20260226205845Z EF126A32FC654F2F7FB4C43AAFA26ECA)...executed safely (allowed).
 
  (./_EF126A32FC654F2F7FB4C43AAFA26ECA.config.minted)
-runsystem(latexminted cleanconfig  --timestamp 20260224162805 EF126A32FC654F2F7FB4C43AAFA26ECA)...executed safely (allowed).
+runsystem(latexminted cleanconfig  --timestamp 20260226205845Z EF126A32FC654F2F7FB4C43AAFA26ECA)...executed safely (allowed).
 
- (./_minted/default.style.minted) (./_minted/54CAA2B8ED43673AA2F3F460C54DB5FC.highlight.minted) (./_minted/407FD42DC0A3D14E8F34F2C429CC0F9D.highlight.minted) (./_minted/84C63795174BF7B46C8477056E977AA8.highlight.minted) (./_minted/9BE6DAE6C24EA29F738B4A311BDC322A.highlight.minted) (./_minted/423366A54E13D90A4DC48E455F16696A.highlight.minted) (./_minted/1242182CE4657CBF195A26316A961AD5.highlight.minted) (./_minted/00621A578A90BBA64A1D68954AFAC104.highlight.minted) (./_minted/BCD44CFDD8A751EC4ED75087331C031F.highlight.minted) (./_minted/B2205B971A52F5C8EA28095FBCF48376.highlight.minted) (./_minted/D3FDECAC3CFE02D82AB6AC5F1D87EEDD.highlight.minted
+ (./_minted/default.style.minted) (./_minted/1914C76AE74B0DAEC2E41DEFEEC2B11D.highlight.minted) (./_minted/F5BD96F66E49E17EAED6F15B246CCF4C.highlight.minted) (./_minted/2D7D0C842A7E3161C8AF57A3CFA8B9BC.highlight.minted)
 
-[3]
+[3] (./_minted/525AA468C459E1C7908D3163AB228608.highlight.minted
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 4.
-) (./_minted/B2205B971A52F5C8EA28095FBCF48376.highlight.minted) (./_minted/ADF5094187EC7D4DE2DC7C44159BFF95.highlight.minted
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 3.
+)
+Overfull \hbox (0.60147pt too wide) in paragraph at lines 235--236
+\OT1/cmtt/m/n/10.95 exists[]subset[]restrict[]nonpos \OT1/cmr/m/n/10.95 re-turns its ex-is-ten-tial fields in the or-der $(\OML/cmm/m/it/10.95 j; []; []; []; []\OT1/cmr/m/n/10.95 )$,
+ []
 
-[4]) (./_minted/7D722B4F9C124836A1BBF6C10D419DA7.highlight.minted) (./_minted/BB8617EE9754D2CA22FDE9284E991FEF.highlight.minted) (./_minted/525AA468C459E1C7908D3163AB228608.highlight.minted)
-Overfull \hbox (5.75105pt too wide) in paragraph at lines 306--309
+(./_minted/6B24CE13420DA2C73B5592E43256FF59.highlight.minted) (./_minted/3B40C60FE8DC12E3407D977993ECBE9B.highlight.minted)
+
+[4] (./_minted/B95EC2B622B7E52C7E087418C5A6BCF6.highlight.minted) (./_minted/60B770C79E194153A18FFE5FB5E8A9C2.highlight.minted
+
+[5])
+Overfull \hbox (5.75105pt too wide) in paragraph at lines 315--318
 \OT1/cmr/m/it/10.95 Key lemma ($\OML/cmm/m/it/10.95 ^^W \OMS/cmsy/m/n/10.95 ^^\ \OML/cmm/m/it/10.95 ^^V$ \OT1/cmr/m/it/10.95 and $\OML/cmm/m/it/10.95 ^^W \OMS/cmsy/m/n/10.95 ?[] \OML/cmm/m/it/10.95 ^^V$ \OT1/cmr/m/it/10.95 im-plies $\OML/cmm/m/it/10.95 ^^W \OT1/cmr/m/n/10.95 = 0$\OT1/cmr/m/it/10.95 ). \OT1/cmr/m/n/10.95 The proof of [][]\OT1/cmtt/m/n/10.95 eq_zero_of_ac_of_mutuallySingular
  []
 
-(./_minted/1CAB3217D1E1D5A4965980E24675975D.highlight.minted
+(./_minted/579DCDBFB620ADE9C26E33898D4EF6BC.highlight.minted)
 
-[5]) (./_minted/5D33E5D16595D5EB532D0CB070663455.highlight.minted) (./_minted/00621A578A90BBA64A1D68954AFAC104.highlight.minted) (./_minted/525AA468C459E1C7908D3163AB228608.highlight.minted)
-
-[6] (./_minted/59F1D13329BB694BC1105C2DCC08292D.highlight.minted) (./_minted/E9225486DC0BCD1289A3B0C5DCCB91F2.highlight.minted)
-Overfull \hbox (6.17706pt too wide) in paragraph at lines 411--414
-\OT1/cmr/m/it/10.95 Corollaries. \OT1/cmr/m/n/10.95 Two im-por-tant con-se-quences fol-low im-me-di-ately. The first, [][]\OT1/cmtt/m/n/10.95 withDensity_rnDeriv_eq^^M[]\OT1/cmr/m/n/10.95 ,
+[6] (./_minted/999EF0EA0F4C3D3602569831D210FB3F.highlight.minted) (./_minted/69CEE981426BD8F6421B4A5C8AB6689D.highlight.minted)
+Overfull \hbox (47.43994pt too wide) in paragraph at lines 393--394
+\OT1/cmr/m/n/10.95 rewrites $\OML/cmm/m/it/10.95 ^^W$ \OT1/cmr/m/n/10.95 to $\OML/cmm/m/it/10.95 ^^V$\OT1/cmtt/m/n/10.95 .withDensity $\OML/cmm/m/it/10.95 f$\OT1/cmr/m/n/10.95 , the goal is closed by the li-brary lemma \OT1/cmtt/m/n/10.95 withDensity[]absolutelyContinuous\OT1/cmr/m/n/10.95 . 
  []
 
-(./_minted/645044005DE374047A0A981CD4D6C21F.highlight.minted
+(./_minted/124059E8BE8587789B1E43737A17EA4A.highlight.minted
 
-[7]) (./_minted/E4907812AC4A88ABC8F4DD92897F2960.highlight.minted)
+[7]) (./_minted/E9225486DC0BCD1289A3B0C5DCCB91F2.highlight.minted) (./_minted/7CFB2EC0E7DC270D2282EAC16D2766EC.highlight.minted) (./_minted/EB54C2EFAAA8185324D48C4D27B5FEC0.highlight.minted) (./_minted/5DBB43B710A1F63F1B4DC7875F91756F.highlight.minted)
 
-[8]
+[8] (./_minted/75BF931E4070D788940B51C0D9AE1724.highlight.minted)
+LaTeX Font Info:    Trying to load font information for OMS+cmtt on input line 465.
+LaTeX Font Info:    No file OMScmtt.fd. on input line 465.
 
-[9] (./Coursework2.aux)
+
+LaTeX Font Warning: Font shape `OMS/cmtt/m/n' undefined
+(Font)              using `OMS/cmsy/m/n' instead
+(Font)              for symbol `textbraceleft' on input line 465.
+
+
+
+[9]
+
+[10] (./Coursework2.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
+
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
 Package rerunfilecheck Info: File `Coursework2.out' has not changed.
 (rerunfilecheck)             Checksum: A6FB697ACBB45C61740187C3D82838F8;1744.
  ) 
 Here is how much of TeX's memory you used:
- 16123 strings out of 473190
- 309610 string characters out of 5715799
- 823712 words of memory out of 5000000
- 39066 multiletter control sequences out of 15000+600000
- 568870 words of font info for 73 fonts, out of 8000000 for 9000
+ 16101 strings out of 473190
+ 308021 string characters out of 5715799
+ 821992 words of memory out of 5000000
+ 39051 multiletter control sequences out of 15000+600000
+ 569206 words of font info for 75 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,6n,79p,941b,953s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,6n,79p,1046b,961s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmitt10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfit1095.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sftt1095.pfb>
-Output written on Coursework2.pdf (9 pages, 248741 bytes).
+Output written on Coursework2.pdf (10 pages, 266480 bytes).
 PDF statistics:
- 209 PDF objects out of 1000 (max. 8388607)
- 160 compressed objects within 2 object streams
- 37 named destinations out of 1000 (max. 500000)
+ 220 PDF objects out of 1000 (max. 8388607)
+ 170 compressed objects within 2 object streams
+ 44 named destinations out of 1000 (max. 500000)
  89 words of extra memory for PDF output out of 10000 (max. 10000000)
 

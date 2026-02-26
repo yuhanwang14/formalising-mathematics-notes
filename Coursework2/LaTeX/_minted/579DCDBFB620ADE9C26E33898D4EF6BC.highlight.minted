@@ -1,13 +1,10 @@
 \begin{MintedVerbatim}[commandchars=\\\{\}]
-\PYG{l+s+sd}{/\PYGZhy{}\PYGZhy{}}\PYG{l+s+sd}{ Key lemma: If ν ≪ μ and ν ⟂ μ, then ν = 0.}
-\PYG{l+s+sd}{This is crucial for the Radon}\PYG{l+s+sd}{\PYGZhy{}}\PYG{l+s+sd}{Nikodym theorem. }\PYG{l+s+sd}{\PYGZhy{}/}
+\PYG{l+s+sd}{/\PYGZhy{}\PYGZhy{}}\PYG{l+s+sd}{ ν ≪ μ and ν ⟂ μ together force ν = 0. From the separating set A (with ν(A) = 0,}
+\PYG{l+s+sd}{μ(Aᶜ) = 0), any measurable s splits as (s ∩ A) ∪ (s ∩ Aᶜ) and both pieces vanish. }\PYG{l+s+sd}{\PYGZhy{}/}
 \PYG{k+kd}{theorem}\PYG{+w}{ }\PYG{n}{eq\PYGZus{}zero\PYGZus{}of\PYGZus{}ac\PYGZus{}of\PYGZus{}mutuallySingular}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{hac}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{ν}\PYG{+w}{ }\PYG{n+nb+bp}{≪}\PYG{+w}{ }\PYG{n}{μ}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{hms}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{ν}\PYG{+w}{ }\PYG{n+nb+bp}{⟂}\PYG{n+nb+bp}{ₘ}\PYG{+w}{ }\PYG{n}{μ}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{:}
 \PYG{+w}{    }\PYG{n}{ν}\PYG{+w}{ }\PYG{n+nb+bp}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{k+kd}{by}
-\PYG{+w}{  }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} From mutual singularity, get the separating set A}
 \PYG{+w}{  }\PYG{n}{rcases}\PYG{+w}{ }\PYG{n}{hms}\PYG{+w}{ }\PYG{k}{with}\PYG{+w}{ }\PYG{o}{⟨}\PYG{n}{A}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{hA\PYGZus{}meas}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{hνA}\PYG{o}{,}\PYG{+w}{ }\PYG{n}{hμAc}\PYG{o}{⟩}
-\PYG{+w}{  }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Show ν = 0 by showing ν(s) = 0 for all measurable s}
 \PYG{+w}{  }\PYG{n}{ext}\PYG{+w}{ }\PYG{n}{s}\PYG{+w}{ }\PYG{n}{hs}
-\PYG{+w}{  }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} Split s into s ∩ A and s ∩ Aᶜ}
 \PYG{+w}{  }\PYG{k}{have}\PYG{+w}{ }\PYG{n}{hsplit}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{s}\PYG{+w}{ }\PYG{n+nb+bp}{=}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{s}\PYG{+w}{ }\PYG{n+nb+bp}{∩}\PYG{+w}{ }\PYG{n}{A}\PYG{o}{)}\PYG{+w}{ }\PYG{n+nb+bp}{∪}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{s}\PYG{+w}{ }\PYG{n+nb+bp}{∩}\PYG{+w}{ }\PYG{n}{A}\PYG{n+nb+bp}{ᶜ}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{k+kd}{by}\PYG{+w}{ }\PYG{n}{rw}\PYG{+w}{ }\PYG{o}{[}\PYG{n}{inter\PYGZus{}union\PYGZus{}compl}\PYG{o}{]}
 \PYG{+w}{  }\PYG{k}{have}\PYG{+w}{ }\PYG{n}{hdisj}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{Disjoint}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{s}\PYG{+w}{ }\PYG{n+nb+bp}{∩}\PYG{+w}{ }\PYG{n}{A}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{s}\PYG{+w}{ }\PYG{n+nb+bp}{∩}\PYG{+w}{ }\PYG{n}{A}\PYG{n+nb+bp}{ᶜ}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{k+kd}{by}
 \PYG{+w}{    }\PYG{n}{rw}\PYG{+w}{ }\PYG{o}{[}\PYG{n}{Set.disjoint\PYGZus{}iff}\PYG{o}{]}
@@ -17,10 +14,8 @@
 \PYG{+w}{    }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{n+nb+bp}{=}\PYG{+w}{ }\PYG{n}{ν}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{s}\PYG{+w}{ }\PYG{n+nb+bp}{∩}\PYG{+w}{ }\PYG{n}{A}\PYG{o}{)}\PYG{+w}{ }\PYG{n+nb+bp}{+}\PYG{+w}{ }\PYG{n}{ν}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{s}\PYG{+w}{ }\PYG{n+nb+bp}{∩}\PYG{+w}{ }\PYG{n}{A}\PYG{n+nb+bp}{ᶜ}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{n}{measure\PYGZus{}union}\PYG{+w}{ }\PYG{n}{hdisj}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{hs.inter}\PYG{+w}{ }\PYG{n}{hA\PYGZus{}meas.compl}\PYG{o}{)}
 \PYG{+w}{    }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{n+nb+bp}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{n+nb+bp}{+}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{k+kd}{by}
 \PYG{+w}{        }\PYG{n}{congr}\PYG{+w}{ }\PYG{l+m+mi}{1}
-\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} ν(s ∩ A) ≤ ν(A) = 0}
 \PYG{+w}{        }\PYG{n+nb+bp}{·}\PYG{+w}{ }\PYG{n}{exact}\PYG{+w}{ }\PYG{n}{le\PYGZus{}antisymm}
 \PYG{+w}{            }\PYG{o}{(}\PYG{n}{measure\PYGZus{}mono}\PYG{+w}{ }\PYG{n}{inter\PYGZus{}subset\PYGZus{}right}\PYG{+w}{ }\PYG{n+nb+bp}{|}\PYG{n+nb+bp}{\PYGZgt{}}\PYG{n+nb+bp}{.}\PYG{n}{trans}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{le\PYGZus{}of\PYGZus{}eq}\PYG{+w}{ }\PYG{n}{hνA}\PYG{o}{)}\PYG{o}{)}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{zero\PYGZus{}le}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{o}{)}
-\PYG{+w}{        }\PYG{c+c1}{\PYGZhy{}\PYGZhy{} ν(s ∩ Aᶜ) = 0 because μ(s ∩ Aᶜ) ≤ μ(Aᶜ) = 0 and ν ≪ μ}
 \PYG{+w}{        }\PYG{n+nb+bp}{·}\PYG{+w}{ }\PYG{k}{have}\PYG{+w}{ }\PYG{n}{hμ}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{μ}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{s}\PYG{+w}{ }\PYG{n+nb+bp}{∩}\PYG{+w}{ }\PYG{n}{A}\PYG{n+nb+bp}{ᶜ}\PYG{o}{)}\PYG{+w}{ }\PYG{n+nb+bp}{≤}\PYG{+w}{ }\PYG{n}{μ}\PYG{+w}{ }\PYG{n}{A}\PYG{n+nb+bp}{ᶜ}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{n}{measure\PYGZus{}mono}\PYG{+w}{ }\PYG{n}{inter\PYGZus{}subset\PYGZus{}right}
 \PYG{+w}{          }\PYG{n}{exact}\PYG{+w}{ }\PYG{n}{hac}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{hμ.trans}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{le\PYGZus{}of\PYGZus{}eq}\PYG{+w}{ }\PYG{n}{hμAc}\PYG{o}{)}\PYG{+w}{ }\PYG{n+nb+bp}{|}\PYG{n+nb+bp}{\PYGZgt{}}\PYG{n+nb+bp}{.}\PYG{n}{antisymm}\PYG{+w}{ }\PYG{o}{(}\PYG{n}{zero\PYGZus{}le}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{o}{)}\PYG{o}{)}
 \PYG{+w}{    }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{n+nb+bp}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{:=}\PYG{+w}{ }\PYG{n}{add\PYGZus{}zero}\PYG{+w}{ }\PYG{l+m+mi}{0}
