@@ -1,208 +1,171 @@
-# Lean Syntax & Proof Logic Cheatsheet (Coursework 2)
+# Oral Exam Cheatsheet — Coursework 2
 
-Quick reference for every Lean construct used in `Coursework2.lean`.
+Study guide organized by **what you'll be asked**, not by Lean syntax category.
 
 ---
 
-## 1. File Structure
+## The Big Picture
 
-| Syntax | Meaning |
+You formalized: **Hahn → Jordan → Lebesgue → Radon-Nikodym**.
+
+- Parts 1, 2, 4, 6: thin wrappers around Mathlib (1-2 line proofs)
+- Part 3: key lemma `eq_zero_of_ac_of_mutuallySingular` — **your main original proof**
+- Part 5: `radon_nikodym` — **the main theorem, uses Part 3**
+
+---
+
+## Quick Tactic Reference
+
+| Tactic | One-line explanation |
 |---|---|
-| `import Mathlib.X.Y.Z` | Load a Mathlib module; makes its definitions, lemmas, and instances available. |
-| `open scoped MeasureTheory ENNReal NNReal` | Bring scoped notations (e.g. `≪`, `⟂ₘ`, `ℝ≥0∞`) into scope without opening the full namespace. |
-| `open Set Filter MeasureTheory` | Open namespaces so you can write `range` instead of `Set.range`, etc. |
-| `namespace Project` / `end Project` | All definitions/theorems inside live under the `Project` prefix, avoiding name clashes with Mathlib. |
-| `section X` / `end X` | Group related declarations. `variable` declarations inside a section are auto-inserted into any theorem that uses them, and discarded when the section ends. |
+| `intro h` | Assume the hypothesis (for `→` or `∀`) |
+| `rcases h with ⟨a, b, c⟩` | Unpack a structure/existential into named parts |
+| `obtain ⟨a, b⟩ := expr` | Same as rcases but from an expression |
+| `rintro ⟨a, _, b⟩` | `intro` + `rcases` in one step; `_` discards |
+| `exact term` | "This is the proof" — supply the exact term |
+| `use witness` | Provide the witness for an `∃` goal |
+| `constructor` | Split `∧` or `↔` into two subgoals |
+| `rw [lemma]` / `rw [← lemma]` | Rewrite goal left-to-right / right-to-left |
+| `unfold name` | Expand a definition so Lean can see through it |
+| `ext s hs` | Measure extensionality: prove equal on every measurable set |
+| `congr 1` | "Both sides have same outer function, prove args equal" |
+| `have h := ...` | Introduce a local fact |
+| `calc` | Chain equalities/inequalities step by step |
+| `· ...` | Focus on one subgoal (after `constructor`, `congr`, etc.) |
 
-## 2. Variables & Universe Polymorphism
+---
 
-| Syntax | Meaning |
-|---|---|
-| `variable {α : Type*}` | Declare an implicit type variable. `Type*` means "any universe level"—Lean infers it. Curly braces `{}` make it implicit (Lean fills it in from context). |
-| `[MeasurableSpace α]` | A **type class instance**: tells Lean that `α` carries a σ-algebra. Square brackets `[]` mean Lean finds the instance automatically via instance resolution. |
-| `[SigmaFinite μ]` | Another type class: asserts μ is σ-finite. Lean uses this to auto-synthesise `HaveLebesgueDecomposition` instances. |
-| `variable {μ ν : Measure α}` | Implicit measure variables. Any theorem in the section that mentions `μ` or `ν` automatically receives these as implicit arguments. |
+## Part-by-Part: What to Say
 
-## 3. Definitions
+### Part 1 — Hahn Decomposition
 
-| Syntax | What it does |
-|---|---|
-| `noncomputable def positivePart (s : SignedMeasure α) : Measure α := ...` | Define a function. `noncomputable` is required because the Jordan decomposition involves classical choice (not constructively computable). |
-| `instance (s : SignedMeasure α) : IsFiniteMeasure (positivePart s) := ...` | Register a **type class instance**: tells Lean that `positivePart s` is always a finite measure, so downstream lemmas requiring `[IsFiniteMeasure ...]` can use it. |
+**Q: What does `hahn_decomposition_exists` do?**
+> It says: for any signed measure s, there's a measurable set P where s is non-negative on P and non-positive on Pᶜ. The proof is a single call to `SignedMeasure.exists_compl_positive_negative`.
 
-## 4. Theorem/Lemma Declarations
+**Q: What does `exists_negative_subset_of_negative_measure` do?**
+> If s(i) < 0, there's a subset j ⊆ i that is a negative set with s(j) < 0. The Mathlib lemma returns fields in a different order than my statement, so I use `obtain` to unpack and `exact ⟨...⟩` to repack in the right order.
 
+**Q: What does `0 ≤[P] s` mean?**
+> The restriction of s to P is non-negative: for every measurable B ⊆ P, s(B) ≥ 0.
+
+### Part 2 — Jordan Decomposition
+
+**Q: Why `noncomputable`?**
+> The Jordan decomposition uses classical choice (Hahn decomposition is non-constructive), so Lean marks it noncomputable.
+
+**Q: What do the `instance` declarations do?**
+> They register `IsFiniteMeasure` with Lean's type class system, so any downstream lemma that needs `[IsFiniteMeasure ...]` can find it automatically.
+
+**Q: Why `unfold` before `exact`?**
+> I defined `positivePart s` as a wrapper around `s.toJordanDecomposition.posPart`. Lean doesn't automatically see through my wrapper, so `unfold` expands it. Then the goal matches the Mathlib lemma and `exact` works.
+
+**Q: What does `.symm` do?**
+> Flips an equality. Mathlib gives `s⁺ - s⁻ = s`, but I need `s = s⁺ - s⁻`.
+
+### Part 3 — Key Lemma (the one you'll be grilled on)
+
+**Statement**: If ν ≪ μ and ν ⟂ₘ μ, then ν = 0.
+
+**Line-by-line**:
+
+1. `rcases hms with ⟨A, hA_meas, hνA, hμAc⟩`
+   — Unpack mutual singularity: get separating set A, its measurability, ν(A)=0, μ(Aᶜ)=0.
+
+2. `ext s hs`
+   — Reduce "ν = 0" to "ν(s) = 0 for every measurable s". Binds s and hs.
+
+3. `have hsplit` / `have hdisj`
+   — s = (s∩A) ∪ (s∩Aᶜ) and the two pieces are disjoint. The disjointness proof destructures a point x in both pieces and derives a contradiction (x ∈ Aᶜ but x ∈ A).
+
+4. `calc ν s = ν((s∩A) ∪ (s∩Aᶜ))` — just rewrite using hsplit.
+
+5. `_ = ν(s∩A) + ν(s∩Aᶜ)` — apply `measure_union`, which needs: (a) `hdisj : Disjoint`, (b) `hs.inter hA_meas.compl : MeasurableSet (s ∩ Aᶜ)`.
+
+6. `_ = 0 + 0` — `congr 1` splits into two subgoals:
+   - **First**: ν(s∩A) = 0. By monotonicity ν(s∩A) ≤ ν(A) = 0, then `le_antisymm ... (zero_le _)`.
+   - **Second**: ν(s∩Aᶜ) = 0. By monotonicity μ(s∩Aᶜ) ≤ μ(Aᶜ) = 0, chain to μ(s∩Aᶜ) = 0, then apply hac.
+
+7. `_ = 0` — `add_zero 0`.
+
+**Q: Why `le_antisymm` instead of just saying "≤ 0 means = 0"?**
+> Measures are in ℝ≥0∞ (ENNReal). There's no subtraction or negation. To get x = 0 you need x ≤ 0 AND 0 ≤ x. `zero_le _` gives the second part for free.
+
+**Q: What does `|>` do?**
+> Pipe operator. `expr |>.method(args)` is `(expr).method(args)`. Just a style choice.
+
+### Part 4 — Lebesgue Decomposition
+
+**Q: Why are there explicit arguments `(μ ν : Measure α)` in `singularPart_mutuallySingular'`?**
+> Both μ and ν have the same type `Measure α`, so Lean can't tell which is which from context. Making them explicit disambiguates.
+
+**Q: How does `HaveLebesgueDecomposition` work?**
+> It's a type class. When you declare `[SigmaFinite μ] [SigmaFinite ν]` in the section, Lean's instance resolution automatically finds a `HaveLebesgueDecomposition ν μ` instance, which is what `haveLebesgueDecomposition_add` needs. You don't construct it explicitly.
+
+### Part 5 — Radon-Nikodym (second proof you'll be grilled on)
+
+**Structure**:
 ```
-theorem name (hyp₁ : Type₁) (hyp₂ : Type₂) : Goal := proof
-```
-
-- `theorem` and `lemma` are interchangeable; both produce proof terms.
-- Named hypotheses in parentheses `()` are explicit; in curly braces `{}` they're implicit.
-- After the colon is the **type** (= the statement to prove).
-- After `:=` is the **proof term**, or `by` starts **tactic mode**.
-
-## 5. Tactics (used in `by` blocks)
-
-### Introducing & Destructuring
-
-| Tactic | What it does | Example in code |
-|---|---|---|
-| `intro hac` | Introduce a hypothesis from a `∀` or `→` goal. | `intro s hs` introduces a set and its measurability. |
-| `rcases h with ⟨a, b, c, d⟩` | Destructure an existential or structure into named components. Uses angle brackets `⟨⟩`. | `rcases hms with ⟨A, hA_meas, hνA, hμAc⟩` unpacks the 4 fields of `MutuallySingular`. |
-| `obtain ⟨j, hj_meas, hji, hj_neg, hj_val⟩ := expr` | Like `rcases` but takes the proof term on the right of `:=`. | Used in Hahn decomposition to unpack an existential. |
-| `rintro ⟨f, _, hf_eq⟩` | Combines `intro` + `rcases` in one step. The `_` discards a component. | Used in the `⇐` direction to introduce and destructure the existential witness. |
-
-### Rewriting
-
-| Tactic | What it does | Example in code |
-|---|---|---|
-| `rw [lemma]` | Rewrite the goal using `lemma` (left-to-right). | `rw [inter_union_compl]` replaces `(s ∩ A) ∪ (s ∩ Aᶜ)` with `s`. |
-| `rw [← lemma]` | Rewrite right-to-left. | `rw [← hsplit]` replaces `s` with `(s ∩ A) ∪ (s ∩ Aᶜ)`. |
-| `rw [hzero]` | Rewrite using a local hypothesis. | Substitutes `ν.singularPart μ = 0` into the goal. |
-| `unfold name` | Unfold a definition in the goal. | `unfold positivePart negativePart` expands to `toJordanDecomposition.posPart`. |
-
-### Finishing
-
-| Tactic | What it does | Example in code |
-|---|---|---|
-| `exact term` | Provide the exact proof term for the goal. | `exact s.toSignedMeasure_toJordanDecomposition.symm` |
-| `congr 1` | Reduce `f a = f b` to `a = b` (congruence). The `1` means "peel one layer". | Used to split `0 + 0 = ...` into two separate goals for each summand. |
-
-### Existential Witnesses
-
-| Tactic | What it does | Example in code |
-|---|---|---|
-| `use term` | Provide a witness for an `∃` goal. | `use ν.rnDeriv μ` witnesses the density function. |
-| `constructor` | Split a `∧` (and) or `↔` (iff) goal into two subgoals. | Used to split `Measurable f ∧ ν = μ.withDensity f`. |
-
-### Extensionality
-
-| Tactic | What it does | Example in code |
-|---|---|---|
-| `ext s hs` | Apply extensionality. For measures: reduces `ν = 0` to `ν s = 0` for arbitrary measurable `s`, binding both the set `s` and its measurability proof `hs`. | Used in `eq_zero_of_ac_of_mutuallySingular`. |
-
-### Calc Blocks
-
-```lean
-calc a = b := proof₁
-  _ = c := proof₂
-  _ = d := proof₃
-```
-
-A **calc block** chains equalities (or inequalities like `≤`). Each `_` refers to the right-hand side of the previous line. You can mix `=` and `≤` as long as they compose transitively. Used twice in this file:
-- In the key lemma to chain `ν s = ν(s∩A ∪ s∩Aᶜ) = ν(s∩A) + ν(s∩Aᶜ) = 0 + 0 = 0`.
-- In the forward direction of Radon-Nikodym to chain `ν = νₛ + f·μ = 0 + f·μ = f·μ`.
-
-### Local Hypotheses
-
-| Tactic | What it does |
-|---|---|
-| `have h : T := proof` | Introduce a local hypothesis `h` of type `T`. |
-| `have h := expr` | Lean infers the type from `expr`. |
-
-## 6. Proof Terms (used without `by`)
-
-Many theorems are proved by a single **term** rather than tactics:
-
-| Pattern | Meaning | Example |
-|---|---|---|
-| `Iff.rfl` | The two sides of `↔` are definitionally equal. | `ac_def` — `ν ≪ μ` literally *is* `∀ s, μ s = 0 → ν s = 0`. |
-| `⟨proof₁, proof₂⟩` | Anonymous constructor for a structure or `∧`. | `⟨Measure.MutuallySingular.symm, Measure.MutuallySingular.symm⟩` builds an `↔`. |
-| `expr.symm` | Flip an equality `a = b` to `b = a`. | `s.toSignedMeasure_toJordanDecomposition.symm` |
-| `expr.trans expr2` | Chain `a = b` and `b = c` into `a = c`. Also works for `≪` (absolute continuity is transitive). | `hνμ.trans hμρ` |
-| `.mp` | Extract the forward direction of an `↔`. | `(withDensity_eq_iff_of_sigmaFinite ...).mp hf_eq` |
-
-## 7. Key Types & Notations
-
-| Lean notation | Mathematical meaning | Lean type |
-|---|---|---|
-| `ℝ≥0∞` | Extended non-negative reals $[0,\infty]$ | `ENNReal` |
-| `Measure α` | A measure on `α` (values in `ℝ≥0∞`) | `MeasureTheory.Measure α` |
-| `SignedMeasure α` | A signed measure (values in `ℝ`) | `MeasureTheory.SignedMeasure α` |
-| `ν ≪ μ` | Absolute continuity: `∀ s, μ s = 0 → ν s = 0` | `Measure.AbsolutelyContinuous ν μ` |
-| `ν ⟂ₘ μ` | Mutual singularity: `∃ A, MeasurableSet A ∧ ν A = 0 ∧ μ Aᶜ = 0` | `Measure.MutuallySingular ν μ` |
-| `μ.withDensity f` | The measure $A \mapsto \int_A f\,d\mu$ | `Measure.withDensity μ f` |
-| `ν.rnDeriv μ` | Radon-Nikodym derivative $d\nu/d\mu$ | `Measure.rnDeriv ν μ` |
-| `ν.singularPart μ` | Singular part $\nu_s$ in Lebesgue decomposition | `Measure.singularPart ν μ` |
-| `f =ᵐ[μ] g` | Equal μ-almost everywhere | `Filter.EventuallyEq (Measure.ae μ) f g` |
-| `0 ≤[P] s` | `P` is a positive set for signed measure `s` | `SignedMeasure.restrict 0 P ≤ SignedMeasure.restrict s P` |
-| `MeasurableSet P` | `P` belongs to the σ-algebra | type class predicate |
-| `Set.Aᶜ` | Complement of set `A` | `Set.compl A` |
-
-## 8. Named Arguments
-
-```lean
-have hdecomp := lebesgue_decomposition (μ := μ) (ν := ν)
+constructor               -- split ↔ into ⇒ and ⇐
+· intro hac               -- ⇒ direction: assume ν ≪ μ
+  use ν.rnDeriv μ         -- witness: the RN derivative
+  constructor             -- split ∧: measurability + identity
+  · exact ...             -- measurability: library lemma
+  · ...                   -- identity: the hard part
+    [show νₛ ≪ μ]        -- via inner calc: νₛ(s) ≤ ν(s) = 0
+    [apply key lemma]     -- νₛ ≪ μ + νₛ ⟂ μ ⟹ νₛ = 0
+    [final calc]          -- ν = νₛ + f·μ = 0 + f·μ = f·μ
+· rintro ⟨f, _, hf_eq⟩   -- ⇐ direction: given density, show AC
+  rw [hf_eq]
+  exact withDensity_absolutelyContinuous μ f
 ```
 
-The `(μ := μ)` syntax provides **named implicit arguments** explicitly. This is needed when Lean cannot infer which measure is `μ` and which is `ν` from the goal alone.
+**Q: Why `(μ := μ) (ν := ν)` in the `have` statements?**
+> Named arguments. Both μ and ν are `Measure α` in the section, so Lean can't infer which is which. The `(μ := μ)` syntax forces the assignment.
 
-## 9. Pipe Operator
+**Q: How does the inner calc show νₛ(s) ≤ ν(s)?**
+> Three steps:
+> 1. `le_add_of_nonneg_right (zero_le _)`: νₛ(s) ≤ νₛ(s) + withDensity(s) (adding non-negative)
+> 2. `(Measure.add_apply _ _ _).symm`: rewrite as (νₛ + withDensity)(s)
+> 3. `rw [← hdecomp]`: replace νₛ + withDensity with ν (Lebesgue decomposition)
 
-```lean
-measure_mono inter_subset_right |>.trans (le_of_eq hνA)
+**Q: What does `rintro ⟨f, _, hf_eq⟩` do?**
+> Introduces the existential witness: f is the density, `_` discards the measurability proof (not needed), hf_eq is the identity ν = μ.withDensity f.
+
+### Part 6 — Applications
+
+**Q: What does `=ᵐ[ρ]` mean?**
+> Almost everywhere equality: f and g differ only on a set of ρ-measure zero. Full type: `Filter.EventuallyEq (Measure.ae ρ)`.
+
+**Q: Why three `[SigmaFinite]` instances?**
+> Chain rule involves μ, ν, ρ — all three need to be σ-finite for the Mathlib lemma to apply.
+
+---
+
+## Key ENNReal Pattern (appears 3× in the file)
+
+To show `x = 0` in ℝ≥0∞:
 ```
-
-`|>` pipes the result of the left side into a dot-method on the right. Equivalent to:
-```lean
-(measure_mono inter_subset_right).trans (le_of_eq hνA)
+le_antisymm (proof_that_x_≤_0) (zero_le _)
 ```
+- You can't just say x ≤ 0 ⟹ x = 0 (that's a real-number fact).
+- In ℝ≥0∞ you need both directions: `x ≤ 0` and `0 ≤ x`.
+- `zero_le _` is always true in ℝ≥0∞.
 
-## 10. The `·` (focused) Syntax
-
-Inside a tactic block, `·` focuses on a single subgoal:
-```lean
-congr 1
-· exact le_antisymm ...   -- first subgoal
-· have hμ := ...           -- second subgoal
+To convert an inequality to equality for absolute continuity:
 ```
-
-Each `·` block solves one goal. Indentation determines scope.
-
-## 11. ENNReal Proof Patterns
-
-Measures take values in `ℝ≥0∞`, where subtraction is truncated. Two recurring patterns:
-
-**Showing `x = 0` from an upper bound:**
-```lean
-le_antisymm (bound_showing_x_le_0) (zero_le _)
+measure_mono inter_subset_right        -- μ(s ∩ Aᶜ) ≤ μ(Aᶜ)
+  |>.trans (le_of_eq hμAc)            -- ... ≤ 0
+  |>.antisymm (zero_le _)             -- ... = 0
 ```
-`zero_le _` provides `0 ≤ x` for free (everything in `ℝ≥0∞` is ≥ 0).
+Then `hac` (absolute continuity) turns μ(...) = 0 into ν(...) = 0.
 
-**Chaining inequality to equality for absolute continuity:**
-```lean
-have hμ : μ (s ∩ Aᶜ) ≤ μ Aᶜ := measure_mono inter_subset_right
-exact hac (hμ.trans (le_of_eq hμAc) |>.antisymm (zero_le _))
-```
-1. `measure_mono` gives the inequality `μ(s ∩ Aᶜ) ≤ μ(Aᶜ)`.
-2. `.trans (le_of_eq hμAc)` chains it with `μ(Aᶜ) = 0` to get `μ(s ∩ Aᶜ) ≤ 0`.
-3. `.antisymm (zero_le _)` closes to `μ(s ∩ Aᶜ) = 0`.
-4. `hac` (absolute continuity) then gives `ν(s ∩ Aᶜ) = 0`.
+---
 
-## 12. Key Mathlib Lemmas Used
+## Likely Exam Questions (Top 5)
 
-| Lemma | Statement (informal) |
-|---|---|
-| `SignedMeasure.exists_compl_positive_negative` | Hahn decomposition exists. |
-| `SignedMeasure.exists_subset_restrict_nonpos` | Negative-measure set contains a negative subset. |
-| `s.toSignedMeasure_toJordanDecomposition` | Jordan decomposition identity `s = s⁺ - s⁻`. |
-| `s.toJordanDecomposition.mutuallySingular` | `s⁺ ⟂ₘ s⁻`. |
-| `withDensity_absolutelyContinuous μ f` | `μ.withDensity f ≪ μ` (density is always AC). |
-| `ν.haveLebesgueDecomposition_add μ` | `ν = ν.singularPart μ + μ.withDensity (ν.rnDeriv μ)`. |
-| `ν.mutuallySingular_singularPart μ` | `ν.singularPart μ ⟂ₘ μ`. |
-| `Measure.measurable_rnDeriv ν μ` | The RN derivative is measurable. |
-| `Measure.withDensity_rnDeriv_eq ν μ hac` | If `ν ≪ μ`, then `μ.withDensity (ν.rnDeriv μ) = ν`. |
-| `withDensity_eq_iff_of_sigmaFinite` | Two densities give the same measure iff they're a.e. equal. |
-| `Measure.rnDeriv_mul_rnDeriv` | Chain rule for RN derivatives. |
-| `Measure.rnDeriv_self ν` | `dν/dν = 1` a.e. |
-| `measure_union hdisj hs` | `μ(s ∪ t) = μ s + μ t` when disjoint and `t` is measurable. |
-| `measure_mono h` | `s ⊆ t → μ s ≤ μ t`. |
-| `Measure.add_apply` | `(μ + ν) s = μ s + ν s`. |
-| `le_add_of_nonneg_right` | `0 ≤ b → a ≤ a + b`. |
-| `le_antisymm` | `a ≤ b → b ≤ a → a = b`. |
-| `le_of_eq` | `a = b → a ≤ b`. |
-| `zero_le _` | `0 ≤ x` in `ℝ≥0∞`. |
-| `zero_add _` | `0 + x = x`. |
-| `add_zero _` | `x + 0 = x`. |
-| `inter_union_compl` | `(s ∩ A) ∪ (s ∩ Aᶜ) = s`. |
-| `inter_subset_right` | `s ∩ A ⊆ A`. |
+1. **"Walk me through `eq_zero_of_ac_of_mutuallySingular` line by line."**
+2. **"How do you show νₛ ≪ μ in the forward direction of `radon_nikodym`?"**
+3. **"Why do you need `le_antisymm` / what is ENNReal?"**
+4. **"Why `unfold` in Part 2?" / "Why `(μ := μ)` in Part 5?"**
+5. **"What does the key lemma say mathematically and why does it matter?"**
+   → If ν ≪ μ and ν ⟂ μ then ν = 0. It kills the singular part in the R-N proof.
